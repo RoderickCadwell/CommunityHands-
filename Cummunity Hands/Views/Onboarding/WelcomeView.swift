@@ -19,20 +19,21 @@ struct WelcomeView: View {
                     .resizable()
                     .frame(width: 250, height: 250)
                 
-                // Navigation Link to Get Started/SignUpView
-                NavigationLink(destination: SignUpView()) {
-                    Text("Get Started")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Color("primaryComHandColor")))
-                        .shadow(color: Color.black.opacity(0.5), radius: 4, x: 0, y: 4)
-                }
-                .padding(30)
                 
                 // CTA Buttons
                 VStack{
+                    // Navigation Link to Get Started/SignUpView
+                    NavigationLink(destination: SignUpView()) {
+                        Text("Get Started")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 54)
+                            .background(RoundedRectangle(cornerRadius: 14).fill(Color("primaryComHandColor")))
+                            .shadow(color: Color.black.opacity(0.5), radius: 4, x: 0, y: 4)
+                    }
+                    .padding(.vertical, 5)
+                    .padding(.horizontal, 20)
                     
                     // Already have an account
                     HStack(spacing: 4) {
