@@ -14,7 +14,7 @@ struct WelcomeView: View {
                 Text("Community Hands")
                     .font(.largeTitle)
                     .fontWeight(.bold)
-                    .foregroundColor(Color("primaryColor"))
+                    .foregroundColor(Color("primaryComHandColor"))
                 Image("logo")
                     .resizable()
                     .frame(width: 250, height: 250)
@@ -26,7 +26,7 @@ struct WelcomeView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: 54)
-                        .background(RoundedRectangle(cornerRadius: 14).fill(Color("primaryColor")))
+                        .background(RoundedRectangle(cornerRadius: 14).fill(Color("primaryComHandColor")))
                         .shadow(color: Color.black.opacity(0.5), radius: 4, x: 0, y: 4)
                 }
                 .padding(30)
@@ -43,7 +43,7 @@ struct WelcomeView: View {
                         NavigationLink(destination: LoginView()) {
                             Text("Log in")
                                 .font(.system(size: 15, weight: .semibold))
-                                .foregroundColor(Color("primaryColor"))
+                                .foregroundColor(Color("primaryComHandColor"))
                         }
                     }
                 }
