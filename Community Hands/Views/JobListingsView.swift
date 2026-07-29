@@ -1,250 +1,276 @@
 //
 //  JobListingsView.swift
-//  Cummunity Hands
+//  Community Hands
 //
 //  Created by JOURNi Student on 7/29/26.
 //
 
 import SwiftUI
 
+struct JobPosting: Identifiable {
+    let id = UUID()
+    let title: String
+    let category: String
+    let price: Double
+    let helperName: String
+    let rating: Double
+    let description: String
+}
+
 struct JobListingsView: View {
+    @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
+    
+    @State private var searchText = ""
+    @State private var selectedCategory = "All"
+    @State private var selectedJob: JobPosting? = nil
 
-    @State private var selectedFilter: String = "All"
-    @State private var searchText: String = ""
+    let categories = ["All", "Lawn Care", "Pet Care", "Babysitting", "Car Wash", "Tutoring"]
 
-    let filterOptions = ["All", "Yard Work", "Erlands", "Pet Care", "Housework"]
-
-    // Mock dataset centered around East Village & Highland Park
-    @State private var mockJobs: [LocalJob] = [
-        LocalJob(
-            clientName: "John",
-            clientImageName: "person.crop.circle.fill",
-            taskDescription: "Needs help with yard work & lawn mowing.",
-            payout: 22.89,
-            distanceMiles: 1.0
-        ),
-        LocalJob(
-            clientName: "Mrs. Davis",
-            clientImageName: "person.crop.circle.fill",
-            taskDescription: "Grocery pickup & delivery from local market.",
-            payout: 18.50,
-            distanceMiles: 0.6
-        ),
-        LocalJob(
-            clientName: "Robert",
-            clientImageName: "person.crop.circle.fill",
-            taskDescription: "Dog walking (2 friendly Golden Retrievers).",
-            payout: 25.00,
-            distanceMiles: 1.4
-        ),
-        LocalJob(
-            clientName: "Eleanor",
-            clientImageName: "person.crop.circle.fill",
-            taskDescription: "Help moving garden pots & rake leaves.",
-            payout: 30.00,
-            distanceMiles: 2.1
-        )
+    let jobListings: [JobPosting] = [
+        JobPosting(title: "Lawn Mowing & Edging", category: "Lawn Care", price: 35.00, helperName: "Alex R.", rating: 4.9, description: "Front and back lawn mowing, including line trimming around edges and driveway cleanup."),
+        JobPosting(title: "Dog Walking (30 Mins)", category: "Pet Care", price: 20.00, helperName: "Sarah M.", rating: 5.0, description: "30-minute neighborhood dog walk with updates and photos provided."),
+        JobPosting(title: "Basic Car Wash & Vacuum", category: "Car Wash", price: 25.00, helperName: "Jordan T.", rating: 4.8, description: "Exterior hand wash, wheel cleaning, and interior vacuuming."),
+        JobPosting(title: "Algebra 1 Tutoring", category: "Tutoring", price: 30.00, helperName: "Maya P.", rating: 4.9, description: "One-hour interactive math tutoring session for middle or high school students.")
     ]
 
-    var filteredJobs: [LocalJob] {
-        if searchText.isEmpty {
-            return mockJobs
-        } else {
-            return mockJobs.filter {
-                $0.taskDescription.localizedCaseInsensitiveContains(searchText) ||
-                $0.clientName.localizedCaseInsensitiveContains(searchText)
-            }
+    var filteredListings: [JobPosting] {
+        jobListings.filter { job in
+            (selectedCategory == "All" || job.category == selectedCategory) &&
+            (searchText.isEmpty || job.title.localizedCaseInsensitiveContains(searchText) || job.description.localizedCaseInsensitiveContains(searchText))
         }
     }
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Mock Background Pattern (Light grid tone)
-                Color(red: 0.95, green: 0.95, blue: 0.93)
-                    .ignoresSafeArea()
-
-                VStack(spacing: 16) {
-                    // Top Header Bar
-                    HStack {
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "chevron.left")
-                                Text("Back to Map")
-                            }
-                            .font(.headline)
-                            .bold()
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 2))
-                        }
-
-                        Spacer()
-
-                        Text("Job Board")
-                            .font(.title2)
-                            .bold()
-                            .foregroundColor(.black)
-
-                        Spacer()
-                        
-                        // Spacer balancing for back button layout
-                        Color.clear
-                            .frame(width: 80, height: 30)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 10)
-
-                    // Mock Search Input Field
+            VStack(spacing: 0) {
+                VStack(spacing: 12) {
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                        TextField("Search local neighborhood tasks...", text: $searchText)
-                            .font(.subheadline)
-                            .autocapitalization(.none)
+                            .foregroundColor(.gray)
+                        TextField("Search available services...", text: $searchText)
                     }
-                    .padding(12)
-                    .background(Color.white)
+                    .padding(10)
+                    .background(Color(.systemGray6))
                     .cornerRadius(10)
-                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.black, lineWidth: 2))
                     .padding(.horizontal)
 
-                    // Filter Pills (Mock Style)
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 10) {
-                            ForEach(filterOptions, id: \.self) { filter in
+                        HStack(spacing: 8) {
+                            ForEach(categories, id: \.self) { category in
                                 Button(action: {
-                                    selectedFilter = filter
+                                    selectedCategory = category
                                 }) {
-                                    Text(filter)
+                                    Text(category)
                                         .font(.subheadline)
-                                        .bold()
+                                        .fontWeight(selectedCategory == category ? .bold : .regular)
                                         .padding(.horizontal, 16)
                                         .padding(.vertical, 8)
-                                        .background(selectedFilter == filter ? Color(red: 0.45, green: 0.75, blue: 0.35) : Color.white)
-                                        .foregroundColor(selectedFilter == filter ? .white : .black)
+                                        .background(selectedCategory == category ? Color.green : Color(.systemGray5))
+                                        .foregroundColor(selectedCategory == category ? .white : .primary)
                                         .cornerRadius(20)
-                                        .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.black, lineWidth: 2))
                                 }
                             }
                         }
                         .padding(.horizontal)
                     }
-
-                    // Mock Listings Feed
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(filteredJobs, id: \.clientName) { job in
-                                MockJobCard(job: job)
-                            }
-                        }
-                        .padding(.horizontal)
-                        .padding(.bottom, 20)
-                    }
                 }
+                .padding(.vertical, 10)
+                .background(Color(.systemBackground))
+
+                Divider()
+
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        ForEach(filteredListings) { job in
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(job.title)
+                                            .font(.headline)
+                                        
+                                        HStack(spacing: 6) {
+                                            Text(job.helperName)
+                                                .font(.subheadline)
+                                                .foregroundColor(.secondary)
+                                            
+                                            Text("•")
+                                                .foregroundColor(.secondary)
+                                            
+                                            Image(systemName: "star.fill")
+                                                .font(.caption)
+                                                .foregroundColor(.yellow)
+                                            
+                                            Text(String(format: "%.1f", job.rating))
+                                                .font(.subheadline)
+                                                .bold()
+                                        }
+                                    }
+                                    Spacer()
+                                    
+                                    Text("$\(String(format: "%.2f", job.price))")
+                                        .font(.title3)
+                                        .bold()
+                                        .foregroundColor(.green)
+                                }
+
+                                Text(job.description)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(2)
+
+                                Button(action: {
+                                    selectedJob = job
+                                }) {
+                                    HStack {
+                                        Image(systemName: "cart.fill")
+                                        Text("Purchase Service")
+                                    }
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(Color.green)
+                                    .cornerRadius(8)
+                                }
+                            }
+                            .padding()
+                            .background(Color(.secondarySystemBackground))
+                            .cornerRadius(12)
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .navigationTitle("Marketplace")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                    .foregroundColor(.green)
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Log Out") {
+                        authViewModel.logOut()
+                    }
+                    .foregroundColor(.red)
+                }
+            }
+            .sheet(item: $selectedJob) { job in
+                PurchaseConfirmationSheet(job: job)
             }
         }
     }
 }
 
-// Custom Hand-Drawn Mock Card Component
-struct MockJobCard: View {
-    let job: LocalJob
-    @State private var isAccepted = false
+struct PurchaseConfirmationSheet: View {
+    let job: JobPosting
+    @Environment(\.dismiss) var dismiss
+    @State private var isPurchased = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            // Header Row: Avatar, Name & Payout
-            HStack(alignment: .top) {
-                HStack(spacing: 12) {
-                    Image(systemName: job.clientImageName)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 48, height: 48)
-                        .foregroundColor(.black)
+        VStack(spacing: 20) {
+            Capsule()
+                .fill(Color.gray.opacity(0.4))
+                .frame(width: 40, height: 5)
+                .padding(.top, 10)
 
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(job.clientName)
-                            .font(.title3)
+            if isPurchased {
+                VStack(spacing: 16) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(.green)
+
+                    Text("Purchase Confirmed!")
+                        .font(.title2)
+                        .bold()
+
+                    Text("You have successfully purchased \(job.title) with \(job.helperName). They will contact you shortly to coordinate details.")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+
+                    Button("Done") {
+                        dismiss()
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.green)
+                    .cornerRadius(10)
+                    .padding(.horizontal)
+                }
+                .padding(.vertical, 30)
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Confirm Order")
+                        .font(.title2)
+                        .bold()
+
+                    Divider()
+
+                    HStack {
+                        Text("Service:")
                             .bold()
-                            .foregroundColor(.black)
+                        Spacer()
+                        Text(job.title)
+                    }
 
-                        HStack(spacing: 4) {
-                            Image(systemName: "mappin.circle.fill")
-                                .font(.caption)
-                                .foregroundColor(.green)
-                            Text("\(String(format: "%.1f", job.distanceMiles)) Mile away")
-                                .font(.caption)
-                                .bold()
-                                .foregroundColor(.black.opacity(0.7))
+                    HStack {
+                        Text("Helper:")
+                            .bold()
+                        Spacer()
+                        Text(job.helperName)
+                    }
+
+                    HStack {
+                        Text("Price:")
+                            .bold()
+                        Spacer()
+                        Text("$\(String(format: "%.2f", job.price))")
+                            .bold()
+                            .foregroundColor(.green)
+                    }
+
+                    Divider()
+
+                    Text("Payment Method")
+                        .font(.headline)
+                    
+                    HStack {
+                        Image(systemName: "creditcard.fill")
+                            .foregroundColor(.green)
+                        Text("Apple Pay / Card ending in 4242")
+                            .font(.subheadline)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+
+                    Spacer()
+
+                    Button(action: {
+                        withAnimation {
+                            isPurchased = true
                         }
+                    }) {
+                        Text("Pay $\(String(format: "%.2f", job.price)) & Book Now")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(10)
                     }
                 }
-
-                Spacer()
-
-                // Mock Payout Badge
-                Text("$\(String(format: "%.2f", job.payout))")
-                    .font(.title3)
-                    .bold()
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(Color(red: 0.85, green: 0.95, blue: 0.80))
-                    .overlay(Rectangle().stroke(Color.black, lineWidth: 2))
-            }
-
-            // Description Box
-            Text(job.taskDescription)
-                .font(.body)
-                .bold()
-                .foregroundColor(.black.opacity(0.9))
-
-            // Mock Action Row
-            HStack(spacing: 12) {
-                Button(action: {
-                    withAnimation(.spring()) {
-                        isAccepted.toggle()
-                    }
-                }) {
-                    Text(isAccepted ? "Accepted ✓" : "Accept")
-                        .font(.headline)
-                        .bold()
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(isAccepted ? Color.gray : Color.green)
-                        .cornerRadius(8)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 2))
-                }
-
-                Button(action: {
-                    // Open mock job details
-                }) {
-                    Text("Details")
-                        .font(.headline)
-                        .bold()
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(Color.white)
-                        .cornerRadius(8)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.black, lineWidth: 2))
-                }
+                .padding()
             }
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(16)
-        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.black, lineWidth: 3))
-        .shadow(color: Color.black.opacity(0.12), radius: 0, x: 4, y: 4) // Block shadow effect
     }
 }
 

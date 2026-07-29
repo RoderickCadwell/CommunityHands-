@@ -1,6 +1,6 @@
 //
 //  loadingview.swift
-//  Cummunity Hands
+//  Community Hands
 //
 //  Created by JOURNi Student on 7/28/26.
 //

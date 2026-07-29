@@ -1,6 +1,6 @@
 //
 //  CustomerBioView.swift
-//  Cummunity Hands
+//  Community Hands
 //
 //  Created by JOURNi Student on 7/29/26.
 //
@@ -55,9 +55,10 @@ struct CustomerBioView: View {
                 Spacer()
 
                 Button(action: {
-                    authViewModel.completeBio()
+                    // Completes onboarding and routes straight to MainMenuView/Marketplace
+                    authViewModel.completeOnboarding()
                 }) {
-                    Text("Save & Enter Main Menu")
+                    Text("Save & Enter Marketplace")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -71,8 +72,8 @@ struct CustomerBioView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
-                        // Takes user back to Terms & Policies screen
-                        authViewModel.hasAcceptedTerms = false
+                        // Takes user back to Welcome/Login flow
+                        authViewModel.logOut()
                     }) {
                         HStack(spacing: 4) {
                             Image(systemName: "chevron.left")

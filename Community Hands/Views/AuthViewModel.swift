@@ -1,6 +1,6 @@
 //
 //  AuthViewModel.swift
-//  Cummunity Hands
+//  Community Hands
 //
 
 import Foundation
@@ -9,10 +9,11 @@ import Combine
 
 @MainActor
 class AuthViewModel: ObservableObject {
+    // MARK: - Persistent App Storage Properties
     @AppStorage("isLoggedIn") var isLoggedIn: Bool = false
-    @AppStorage("hasAcceptedTerms") var hasAcceptedTerms: Bool = false
-    @AppStorage("hasCompletedBio") var hasCompletedBio: Bool = false
+    @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding: Bool = false
 
+    // MARK: - Navigation & Auth State Properties
     @Published var isAuthenticated: Bool = false
     @Published var userEmailOrPhone: String = ""
     @Published var userFullName: String = ""
@@ -25,30 +26,27 @@ class AuthViewModel: ObservableObject {
         self.isAuthenticated = self.isLoggedIn
     }
 
-    // Direct Login -> Bypasses Terms & Bio, goes straight to Main/Listings
+    // Direct Login: Existing users skip onboarding and go straight to Marketplace
     func logIn(emailOrPhone: String) {
         self.userEmailOrPhone = emailOrPhone
         self.isLoggedIn = true
         self.isAuthenticated = true
-        self.hasAcceptedTerms = true
-        self.hasCompletedBio = true
+        self.hasCompletedOnboarding = true
         self.errorMessage = nil
     }
 
     func login() {
         self.isLoggedIn = true
         self.isAuthenticated = true
-        self.hasAcceptedTerms = true
-        self.hasCompletedBio = true
+        self.hasCompletedOnboarding = true
         self.errorMessage = nil
     }
 
-    // Sign Up -> Forces full onboarding sequence
+    // Sign Up: New users are forced through Terms & Bio onboarding
     func signUp() {
         self.isLoggedIn = true
         self.isAuthenticated = true
-        self.hasAcceptedTerms = false
-        self.hasCompletedBio = false
+        self.hasCompletedOnboarding = false
         self.errorMessage = nil
     }
 
@@ -58,24 +56,26 @@ class AuthViewModel: ObservableObject {
         self.userIDNumber = idNumber
         self.isLoggedIn = true
         self.isAuthenticated = true
-        self.hasAcceptedTerms = false
-        self.hasCompletedBio = false
+        self.hasCompletedOnboarding = false
         self.errorMessage = nil
     }
 
     func acceptTerms() {
-        self.hasAcceptedTerms = true
+        // Keeps onboarding active until bio is also completed
     }
 
     func completeBio() {
-        self.hasCompletedBio = true
+        self.hasCompletedOnboarding = true
+    }
+
+    func completeOnboarding() {
+        self.hasCompletedOnboarding = true
     }
 
     func logOut() {
         self.isLoggedIn = false
         self.isAuthenticated = false
-        self.hasAcceptedTerms = false
-        self.hasCompletedBio = false
+        self.hasCompletedOnboarding = false
         self.errorMessage = nil
     }
 }
