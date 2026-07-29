@@ -9,112 +9,38 @@ import SwiftUI
 
 struct SignUpView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
+    @Environment(\.dismiss) var dismiss
 
-    // Steps: 1 = Waiver, 2 = Contact Info, 3 = ID Verify, 4 = Bio & Profile Photo
+    // Sign Up steps: 1 = Account Info, 2 = Identity Verification
     @State private var step = 1
-    @State private var hasAcceptedWaiver = false
 
     // Loading overlay controls
     @State private var showLoadingScreen = false
     @State private var targetStep = 1
+    @State private var isFinalizingSignUp = false
 
     // Form inputs
-    @State private var contactInput = ""
+    @State private var emailOrPhone = ""
     @State private var fullName = ""
     @State private var idType = "Driver's License"
     @State private var idNumber = ""
-    
-    // Step 4 Bio inputs
-    @State private var bioText = "Hi, I'm a local community member looking to hire trusted neighborhood helpers for everyday tasks around the house."
-    @State private var isCustomImageAttached = false
 
     var body: some View {
         ZStack {
-            VStack(spacing: 16) {
-                // STEP 1: Waiver, Terms & Policy Screen
+            VStack(spacing: 20) {
                 if step == 1 {
-                    VStack(spacing: 12) {
-                        Text("User Agreement & Waiver")
+                    // STEP 1: Basic Account Setup
+                    VStack(spacing: 16) {
+                        Text("Create Your Account")
                             .font(.title2)
                             .bold()
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 16)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .stroke(Color.black, lineWidth: 2)
-                            )
 
-                        ScrollView {
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("Community Hands User Agreement, Liability Waiver, and Release of Claims")
-                                    .font(.headline)
-                                    .bold()
-                                    .padding(.bottom, 2)
-
-                                Group {
-                                    Text("1. About Community Hands").font(.subheadline).bold()
-                                    Text("Community Hands is a platform connecting individuals seeking help with everyday tasks (\"Clients\") and teenagers or other approved users (\"Helpers\") willing to perform those tasks in their local communities.")
-
-                                    Text("2. Eligibility").font(.subheadline).bold()
-                                    Text("Users must meet minimum age requirements. Helpers under 18 must have verified parental or legal guardian consent before creating an account.")
-
-                                    Text("3. Assumption of Risk").font(.subheadline).bold()
-                                    Text("By using Community Hands, you voluntarily assume all risks associated with participating in services arranged through the App.")
-
-                                    Text("4. Release of Liability").font(.subheadline).bold()
-                                    Text("To the fullest extent permitted by law, you release and hold harmless Community Hands from any claims arising from services arranged through the platform.")
-                                }
-                            }
+                        Text("Enter your email or phone number to get started.")
                             .font(.caption)
-                            .foregroundColor(.primary)
-                            .padding()
-                        }
-                        .frame(maxHeight: 280)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                        )
-
-                        Toggle(isOn: $hasAcceptedWaiver) {
-                            Text("I agree to the User Agreement, Liability Waiver, and Release of Claims")
-                                .font(.caption2)
-                                .bold()
-                        }
-                        .padding(.horizontal, 4)
-
-                        Button(action: {
-                            if hasAcceptedWaiver {
-                                authViewModel.errorMessage = nil
-                                transitionToStep(2)
-                            } else {
-                                authViewModel.errorMessage = "You must accept the terms & waiver to continue."
-                            }
-                        }) {
-                            Text("Continue")
-                                .font(.headline)
-                                .bold()
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 32)
-                                .padding(.vertical, 10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(Color.black, lineWidth: 2)
-                                )
-                        }
-                        .opacity(hasAcceptedWaiver ? 1.0 : 0.5)
-                    }
-                }
-                
-                // STEP 2: Email or Phone Number Screen
-                else if step == 2 {
-                    VStack(spacing: 16) {
-                        Text("What's your email or phone number?")
-                            .font(.headline)
+                            .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
 
-                        TextField("Enter email or phone number", text: $contactInput)
+                        TextField("Enter email or phone number", text: $emailOrPhone)
                             .padding()
                             .background(Color(.systemGray6))
                             .cornerRadius(8)
@@ -125,13 +51,19 @@ struct SignUpView: View {
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
 
+                        if let errorMessage = authViewModel.errorMessage {
+                            Text(errorMessage)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+
                         Button(action: {
-                            if contactInput.isEmpty {
+                            if emailOrPhone.isEmpty {
                                 authViewModel.errorMessage = "Please enter an email or phone number."
                             } else {
-                                authViewModel.userEmailOrPhone = contactInput
+                                authViewModel.userEmailOrPhone = emailOrPhone
                                 authViewModel.errorMessage = nil
-                                transitionToStep(3)
+                                transitionToStep(2)
                             }
                         }) {
                             Text("Next: Verify Identity")
@@ -142,28 +74,25 @@ struct SignUpView: View {
                                 .background(Color.green)
                                 .cornerRadius(8)
                         }
-
-                        Button("Back to Agreement") {
-                            step = 1
-                        }
-                        .font(.footnote)
-                        .foregroundColor(.gray)
                     }
-                }
-                
-                // STEP 3: Identity Verification Screen
-                else if step == 3 {
+                } else {
+                    // STEP 2: Identity Verification & Complete Sign Up
                     ScrollView {
                         VStack(spacing: 16) {
-                            Image(systemName: "doc.text.magnifyingglass")
+                            Image(systemName: "person.badge.shield.checkmark.fill")
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 50, height: 50)
-                                .foregroundColor(.blue)
+                                .foregroundColor(.green)
 
-                            Text("Verify your identity")
+                            Text("Verify Identity & Join")
                                 .font(.title2)
                                 .bold()
+
+                            Text("Provide your details to complete setup.")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
 
                             TextField("Full Name", text: $fullName)
                                 .padding()
@@ -187,7 +116,7 @@ struct SignUpView: View {
                             }) {
                                 HStack {
                                     Image(systemName: "photo")
-                                    Text(authViewModel.hasUploadedID ? "ID Uploaded ✓" : "Upload / Take a Photo of ID")
+                                    Text(authViewModel.hasUploadedID ? "ID Uploaded ✓" : "Upload ID Photo")
                                 }
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -195,15 +124,28 @@ struct SignUpView: View {
                                 .cornerRadius(8)
                             }
 
+                            if let errorMessage = authViewModel.errorMessage {
+                                Text(errorMessage)
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+
                             Button(action: {
                                 if fullName.isEmpty || idNumber.isEmpty {
-                                    authViewModel.errorMessage = "Please fill in all identity fields."
+                                    authViewModel.errorMessage = "Please fill in all identity details."
                                 } else {
+                                    authViewModel.userFullName = fullName
+                                    authViewModel.userIDType = idType
+                                    authViewModel.userIDNumber = idNumber
                                     authViewModel.errorMessage = nil
-                                    transitionToStep(4)
+
+                                    isFinalizingSignUp = true
+                                    withAnimation {
+                                        showLoadingScreen = true
+                                    }
                                 }
                             }) {
-                                Text("Next: Profile & Bio")
+                                Text("Sign Up")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
@@ -211,104 +153,36 @@ struct SignUpView: View {
                                     .background(Color.green)
                                     .cornerRadius(8)
                             }
-                            
-                            Button("Back") {
-                                step = 2
-                            }
-                            .font(.footnote)
-                            .foregroundColor(.gray)
-                        }
-                    }
-                }
 
-                // STEP 4: Customer Profile Picture & Bio Screen
-                else {
-                    VStack(spacing: 20) {
-                        Text("Customer Bio & Profile")
-                            .font(.title2)
-                            .bold()
-
-                        VStack(spacing: 8) {
-                            ZStack(alignment: .bottomTrailing) {
-                                Circle()
-                                    .fill(Color(.systemGray5))
-                                    .frame(width: 130, height: 130)
-                                    .overlay(
-                                        Image(systemName: isCustomImageAttached ? "person.crop.circle.fill" : "person.fill.viewfinder")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .padding(20)
-                                            .foregroundColor(.black)
-                                    )
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.black, lineWidth: 3)
-                                    )
-
-                                Button(action: {
-                                    isCustomImageAttached.toggle()
-                                }) {
-                                    Image(systemName: "paperclip.circle.fill")
-                                        .resizable()
-                                        .frame(width: 36, height: 36)
-                                        .foregroundColor(.green)
-                                        .background(Color.white.clipShape(Circle()))
+                            // BACK BUTTON (From Step 2 -> Step 1)
+                            Button(action: {
+                                withAnimation {
+                                    step = 1
                                 }
-                            }
-
-                            Text(isCustomImageAttached ? "Custom Photo Attached" : "Pre-selected Senior Profile Photo")
-                                .font(.caption)
+                            }) {
+                                HStack {
+                                    Image(systemName: "chevron.left")
+                                    Text("Back to Step 1")
+                                }
+                                .font(.footnote)
                                 .foregroundColor(.gray)
+                                .padding(.top, 4)
+                            }
                         }
-
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text("Customer Bio:")
-                                .font(.headline)
-
-                            TextEditor(text: $bioText)
-                                .frame(height: 120)
-                                .padding(8)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .stroke(Color.black, lineWidth: 1.5)
-                                )
-                        }
-
-                        Button(action: {
-                            authViewModel.finalizeSignUp(
-                                fullName: fullName,
-                                idType: idType,
-                                idNumber: idNumber
-                            )
-                        }) {
-                            Text("Continue")
-                                .font(.title3)
-                                .bold()
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 36)
-                                .padding(.vertical, 10)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .stroke(Color.black, lineWidth: 2)
-                                )
-                        }
-
-                        Button("Back to ID Verification") {
-                            step = 3
-                        }
-                        .font(.footnote)
-                        .foregroundColor(.gray)
                     }
                 }
             }
             .padding(.horizontal)
 
-            // Distinct Sign Up Loading Overlay
+            // Sign Up Loading Overlay
             if showLoadingScreen {
                 LoadingView(mode: .signUp, isLoading: $showLoadingScreen) {
-                    step = targetStep
+                    if isFinalizingSignUp {
+                        // Triggers auth state and forces Terms & Policies screen next
+                        authViewModel.finalizeSignUp(fullName: fullName, idType: idType, idNumber: idNumber)
+                    } else {
+                        step = targetStep
+                    }
                 }
                 .transition(.opacity)
             }
@@ -317,6 +191,7 @@ struct SignUpView: View {
 
     private func transitionToStep(_ nextStep: Int) {
         targetStep = nextStep
+        isFinalizingSignUp = false
         withAnimation {
             showLoadingScreen = true
         }

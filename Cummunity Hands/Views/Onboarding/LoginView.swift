@@ -45,6 +45,12 @@ struct LoginView: View {
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
 
+                        if let errorMessage = authViewModel.errorMessage {
+                            Text(errorMessage)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                        }
+
                         Button(action: {
                             if input.isEmpty {
                                 authViewModel.errorMessage = "Please enter an email or phone number."
@@ -112,6 +118,12 @@ struct LoginView: View {
                                 .cornerRadius(8)
                             }
 
+                            if let errorMessage = authViewModel.errorMessage {
+                                Text(errorMessage)
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
+
                             Button(action: {
                                 if fullName.isEmpty || idNumber.isEmpty {
                                     authViewModel.errorMessage = "Please fill in your name and ID number."
@@ -147,7 +159,7 @@ struct LoginView: View {
             }
             .padding(.horizontal)
 
-            // Distinct Log In Loading Overlay
+            // Log In Loading Overlay
             if showLoadingScreen {
                 LoadingView(mode: .login, isLoading: $showLoadingScreen) {
                     if isFinalizingLogin {

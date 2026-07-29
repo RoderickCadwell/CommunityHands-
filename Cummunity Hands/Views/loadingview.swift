@@ -11,6 +11,9 @@ enum LoadingMode {
     case welcome
     case login
     case signUp
+    case menuings
+    case schedule
+    case acceptJob
 }
 
 struct LoadingView: View {
@@ -39,23 +42,21 @@ struct LoadingView: View {
                         .fill(Color.green.opacity(0.15))
                         .frame(width: 160, height: 160)
 
-                    if mode == .welcome {
-                        // WELCOME ANIMATION
+                    switch mode {
+                    case .welcome:
                         if !isCompletedStage {
-                            // Stage 1: Joining hands / Community icon
                             Image(systemName: "hand.raised.hands.fill")
                                 .font(.system(size: 55))
                                 .foregroundColor(.green)
                                 .offset(y: bounceOffset)
                         } else {
-                            // Stage 2: Welcome heart / community emblem
                             Image(systemName: "heart.circle.fill")
                                 .font(.system(size: 65))
                                 .foregroundColor(.green)
                                 .transition(.scale.combined(with: .opacity))
                         }
-                    } else if mode == .login {
-                        // LOG IN ANIMATION
+
+                    case .login:
                         if !isCompletedStage {
                             Image(systemName: "shield.bordercheck")
                                 .font(.system(size: 50))
@@ -67,8 +68,8 @@ struct LoadingView: View {
                                 .foregroundColor(.green)
                                 .transition(.scale.combined(with: .opacity))
                         }
-                    } else {
-                        // SIGN UP ANIMATION
+
+                    case .signUp:
                         if !isCompletedStage {
                             HStack(spacing: 6) {
                                 Image(systemName: "figure.walk")
@@ -96,10 +97,49 @@ struct LoadingView: View {
                             }
                             .transition(.scale.combined(with: .opacity))
                         }
+
+                    case .menuings:
+                        if !isCompletedStage {
+                            Image(systemName: "list.bullet.clipboard.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.green)
+                                .offset(y: bounceOffset)
+                        } else {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.green)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+
+                    case .schedule:
+                        if !isCompletedStage {
+                            Image(systemName: "calendar.badge.clock")
+                                .font(.system(size: 50))
+                                .foregroundColor(.green)
+                                .offset(y: bounceOffset)
+                        } else {
+                            Image(systemName: "calendar.badge.checkmark")
+                                .font(.system(size: 60))
+                                .foregroundColor(.green)
+                                .transition(.scale.combined(with: .opacity))
+                        }
+
+                    case .acceptJob:
+                        if !isCompletedStage {
+                            Image(systemName: "hand.thumbsup.fill")
+                                .font(.system(size: 50))
+                                .foregroundColor(.green)
+                                .offset(y: bounceOffset)
+                        } else {
+                            Image(systemName: "checkmark.seal.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.green)
+                                .transition(.scale.combined(with: .opacity))
+                        }
                     }
                 }
 
-                // Dynamic Message
+                // Dynamic Progress Message
                 Text(progressText)
                     .font(.headline)
                     .bold()
@@ -124,6 +164,12 @@ struct LoadingView: View {
             progressText = "Verifying account credentials..."
         case .signUp:
             progressText = "Preparing local community supplies..."
+        case .menuings:
+            progressText = "Loading local neighborhood jobs..."
+        case .schedule:
+            progressText = "Syncing your job calendar..."
+        case .acceptJob:
+            progressText = "Confirming job assignment with client..."
         }
     }
 
@@ -144,6 +190,12 @@ struct LoadingView: View {
                     progressText = "Identity verified! Opening dashboard..."
                 case .signUp:
                     progressText = "Handing garden supplies to customer..."
+                case .menuings:
+                    progressText = "Jobs ready for East Village & Highland Park!"
+                case .schedule:
+                    progressText = "Schedule updated successfully!"
+                case .acceptJob:
+                    progressText = "Job accepted! Details sent to client."
                 }
             }
         }
@@ -159,5 +211,5 @@ struct LoadingView: View {
 }
 
 #Preview {
-    LoadingView(mode: .welcome, isLoading: .constant(true), onComplete: {})
+    LoadingView(mode: .menuings, isLoading: .constant(true), onComplete: {})
 }
