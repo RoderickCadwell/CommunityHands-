@@ -30,19 +30,19 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		3F159EA53017A56100F45C37 /* Cummunity Hands */ = {
+		3F159EA53017A56100F45C37 /* Community Hands */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Cummunity Hands";
+			path = "Community Hands";
 			sourceTree = "<group>";
 		};
-		3F159EB53017A56300F45C37 /* Cummunity HandsTests */ = {
+		3F159EB53017A56300F45C37 /* Community HandsTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Cummunity HandsTests";
+			path = "Community HandsTests";
 			sourceTree = "<group>";
 		};
-		3F159EBF3017A56300F45C37 /* Cummunity HandsUITests */ = {
+		3F159EBF3017A56300F45C37 /* Community HandsUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Cummunity HandsUITests";
+			path = "Community HandsUITests";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		3F159E9A3017A56100F45C37 = {
 			isa = PBXGroup;
 			children = (
-				3F159EA53017A56100F45C37 /* Cummunity Hands */,
-				3F159EB53017A56300F45C37 /* Cummunity HandsTests */,
-				3F159EBF3017A56300F45C37 /* Cummunity HandsUITests */,
+				3F159EA53017A56100F45C37 /* Community Hands */,
+				3F159EB53017A56300F45C37 /* Community HandsTests */,
+				3F159EBF3017A56300F45C37 /* Community HandsUITests */,
 				3F159EA43017A56100F45C37 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,7 +108,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				3F159EA53017A56100F45C37 /* Cummunity Hands */,
+				3F159EA53017A56100F45C37 /* Community Hands */,
 			);
 			name = "Cummunity Hands";
 			packageProductDependencies = (
@@ -131,7 +131,7 @@
 				3F159EB43017A56300F45C37 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				3F159EB53017A56300F45C37 /* Cummunity HandsTests */,
+				3F159EB53017A56300F45C37 /* Community HandsTests */,
 			);
 			name = "Cummunity HandsTests";
 			packageProductDependencies = (
@@ -154,7 +154,7 @@
 				3F159EBE3017A56300F45C37 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				3F159EBF3017A56300F45C37 /* Cummunity HandsUITests */,
+				3F159EBF3017A56300F45C37 /* Community HandsUITests */,
 			);
 			name = "Cummunity HandsUITests";
 			packageProductDependencies = (

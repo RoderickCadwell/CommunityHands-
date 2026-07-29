@@ -13,7 +13,7 @@ struct Cummunity_HandsApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            WelcomeView()
                 .environmentObject(authViewModel)
         }
     }
