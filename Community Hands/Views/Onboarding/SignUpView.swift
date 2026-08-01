@@ -26,14 +26,16 @@ struct SignUpView: View {
     @State private var idNumber = ""
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 20) {
+        NavigationStack {
+            ZStack {
+                VStack(spacing: 20) {
                 if step == 1 {
                     // STEP 1: Basic Account Setup
                     VStack(spacing: 16) {
                         Text("Create Your Account")
                             .font(.title2)
                             .bold()
+                            .accessibilityAddTraits(.isHeader)
 
                         Text("Enter your email or phone number to get started.")
                             .font(.caption)
@@ -50,6 +52,7 @@ struct SignUpView: View {
                             )
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
+                            .accessibilityLabel("Email or phone number")
 
                         if let errorMessage = authViewModel.errorMessage {
                             Text(errorMessage)
@@ -70,10 +73,11 @@ struct SignUpView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(8)
+                                .frame(height: 54)
+                                .background(Color("primaryComHandColor"))
+                                .cornerRadius(14)
                         }
+                        .accessibilityLabel("Next: Verify your identity")
                     }
                 } else {
                     // STEP 2: Identity Verification & Complete Sign Up
@@ -149,10 +153,11 @@ struct SignUpView: View {
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green)
-                                    .cornerRadius(8)
+                                    .frame(height: 54)
+                                    .background(Color("primaryComHandColor"))
+                                    .cornerRadius(14)
                             }
+                            .accessibilityLabel("Complete sign up")
 
                             // BACK BUTTON (From Step 2 -> Step 1)
                             Button(action: {
@@ -186,7 +191,10 @@ struct SignUpView: View {
                 }
                 .transition(.opacity)
             }
-        }
+                }
+            }
+            .navigationTitle("Sign Up")
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     private func transitionToStep(_ nextStep: Int) {

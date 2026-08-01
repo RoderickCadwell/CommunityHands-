@@ -70,6 +70,7 @@ struct SplashScreen: View {
                         .frame(width: 140, height: 140)
                         .scaleEffect(logoScale)
                         .opacity(logoOpacity)
+                        .accessibilityLabel("Community Hands logo")
 
                     // App Name
                     Text("Community Hands")
@@ -77,6 +78,7 @@ struct SplashScreen: View {
                         .foregroundColor(Color("primaryComHandColor"))
                         .opacity(titleOpacity)
                         .offset(y: titleOffset)
+                        .accessibilityAddTraits(.isHeader)
 
                     // Tagline
                     Text("Connecting Teens & Homeowners")
