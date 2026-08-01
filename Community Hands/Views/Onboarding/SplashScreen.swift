@@ -108,10 +108,9 @@ struct SplashScreen: View {
                         }
                         .offset(x: helperOffset)
                         
-                        // Connection icon
-                        Image(systemName: "hand.raised.fill")
-                            .font(.system(size: 32))
-                            .foregroundColor(Color("primaryComHandColor"))
+                        // Connection icon - handshake showing community connection
+                        Text("🫱🏾‍🫲🏿")
+                            .font(.system(size: 36))
                             .opacity(connectionOpacity)
                         
                         // Homeowner side
