@@ -27,28 +27,32 @@ The current app launches directly to `WelcomeView` without a branded splash scre
 **Location:** `Community Hands/Views/Onboarding/SplashScreen.swift`
 
 **Requirements:**
-- Full-screen ZStack with white background
+- Full-screen ZStack with soft gradient background
 - Animated Community Hands logo (scale + fade)
-- Horizontal scrolling feature pills showing MVP features
-- Minimum 1.5s display time
+- **Unique to Community Hands** — NO feature pills (not LifeLoop)
+- Visual representation of teens helping homeowners
+- Core values display: WORK, LEARN, EARN, GROW
+- Minimum 3s display time for full animation
 - Smooth transition (fade) to WelcomeView
-- Uses same pattern as LIFELOOP SplashScreen
 
-**Features to display in pills:**
-- "Lawn Care"
-- "Pet Care" 
-- "Babysitting"
-- "Car Wash"
-- "Tutoring"
+**Animation Sequence:**
+1. Logo scales and fades in
+2. App title slides up and fades in
+3. Tagline "Connecting Teens & Homeowners" appears
+4. **Unique:** Teens and Homeowners "come together" animation
+5. **Unique:** Core values appear (WORK, LEARN, EARN, GROW icons)
+6. Transition to WelcomeView
 
 **Animation Timing:**
 ```swift
 // MARK: - Animation Timing
-// Logo appears first, then text, then feature pills scroll
-private let logoAnimationDelay: Double = 0.2
-private let textAnimationDelay: Double = 0.4
-private let pillsStartDelay: Double = 1.0
-private let totalDuration: Double = 1.8
+// Unique to Community Hands — tells story of connection
+private let logoDelay: Double = 0.2
+private let titleDelay: Double = 0.6
+private let taglineDelay: Double = 0.9
+private let connectionDelay: Double = 1.2  // Teens & Homeowners meet
+private let valuesDelay: Double = 1.6      // Core values appear
+private let transitionDelay: Double = 3.0
 ```
 
 **Code Structure:**
