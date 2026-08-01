@@ -276,9 +276,9 @@ struct InteractiveTourView: View {
                             .foregroundColor(.secondary)
                     }
                     
-                    Image(systemName: "hand.raised.fill")
-                        .font(.system(size: 32))
-                        .foregroundColor(Color("primaryComHandColor"))
+                    // Handshake emoji showing connection between homeowners and teens
+                    Text("🫱🏾‍🫲🏿")
+                        .font(.system(size: 40))
                     
                     VStack(spacing: 8) {
                         Image(systemName: "person.fill.checkmark")

@@ -7,15 +7,20 @@
 
 import SwiftUI
 
+// MARK: - Welcome View
+// Entry point after SplashScreen
+// Updated per Tone's design: NavigationLink to Tour
+// Tour then guides user to SignUp
 struct WelcomeView: View {
-    @State private var showLoadingScreen = false
-    @State private var navigateToSignUp = false
-    @State private var navigateToLogin = false
+    // MARK: - Navigation
+    // No state needed - using NavigationLink directly for clean, declarative navigation
+    // Tour handles the SignUp flow; Login is direct NavigationLink
 
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack(spacing: 45) {
+                    // MARK: - Branding
                     Text("Community Hands")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -25,15 +30,13 @@ struct WelcomeView: View {
                         .resizable()
                         .frame(width: 250, height: 250)
 
-                    // CTA Buttons
+                    // MARK: - CTA Buttons
                     VStack {
-                        // Button for Get Started (Triggers Loading Animation)
-                        Button(action: {
-                            withAnimation {
-                                showLoadingScreen = true
-                            }
-                        }) {
-                            Text("Get Started")
+                        // MARK: - Tour Navigation
+                        // "Come in our Neighborhood" navigates to InteractiveTour
+                        // Tour then guides user to SignUp at completion
+                        NavigationLink(destination: InteractiveTourView()) {
+                            Text("Come in our Neighborhood")
                                 .font(.system(size: 20, weight: .semibold))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -47,36 +50,18 @@ struct WelcomeView: View {
                         .padding(.vertical, 5)
                         .padding(.horizontal, 20)
 
-                        // Already have an account
+                        // Already have an account - Log in as NavigationLink for consistency
                         HStack(spacing: 4) {
                             Text("Already have an account?")
                                 .font(.system(size: 15, weight: .regular))
 
-                            Button(action: {
-                                navigateToLogin = true
-                            }) {
+                            NavigationLink(destination: LoginView()) {
                                 Text("Log in")
                                     .font(.system(size: 15, weight: .semibold))
                                     .foregroundColor(Color("primaryComHandColor"))
                             }
                         }
                     }
-                }
-
-                // Modern Navigation Destinations (Fixes Xcode Warnings)
-                .navigationDestination(isPresented: $navigateToSignUp) {
-                    SignUpView()
-                }
-                .navigationDestination(isPresented: $navigateToLogin) {
-                    LoginView()
-                }
-
-                // Loading Overlay on Welcome Screen
-                if showLoadingScreen {
-                    LoadingView(mode: .welcome, isLoading: $showLoadingScreen) {
-                        navigateToSignUp = true
-                    }
-                    .transition(.opacity)
                 }
             }
         }
