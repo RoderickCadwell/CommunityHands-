@@ -26,8 +26,9 @@ struct SignUpView: View {
     @State private var idNumber = ""
 
     var body: some View {
-        ZStack {
-            VStack(spacing: 20) {
+        NavigationStack {
+            ZStack {
+                VStack(spacing: 20) {
                 if step == 1 {
                     // STEP 1: Basic Account Setup
                     VStack(spacing: 16) {
@@ -72,10 +73,11 @@ struct SignUpView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .cornerRadius(8)
+                                .frame(height: 54)
+                                .background(Color("primaryComHandColor"))
+                                .cornerRadius(14)
                         }
+                        .accessibilityLabel("Next: Verify your identity")
                     }
                 } else {
                     // STEP 2: Identity Verification & Complete Sign Up
@@ -151,10 +153,11 @@ struct SignUpView: View {
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.green)
-                                    .cornerRadius(8)
+                                    .frame(height: 54)
+                                    .background(Color("primaryComHandColor"))
+                                    .cornerRadius(14)
                             }
+                            .accessibilityLabel("Complete sign up")
 
                             // BACK BUTTON (From Step 2 -> Step 1)
                             Button(action: {
@@ -188,7 +191,9 @@ struct SignUpView: View {
                 }
                 .transition(.opacity)
             }
-        }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
     }
 
     private func transitionToStep(_ nextStep: Int) {

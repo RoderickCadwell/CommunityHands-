@@ -132,46 +132,44 @@ struct InteractiveTourView: View {
 
     // MARK: - Body
     var body: some View {
-        ZStack {
-            // Background
-            Color(.systemBackground)
-                .ignoresSafeArea()
-            
-            // Main content
-            VStack(spacing: 0) {
-                // MARK: - Header
-                headerView
+        NavigationStack {
+            ZStack {
+                // Background
+                Color(.systemBackground)
+                    .ignoresSafeArea()
                 
-                // MARK: - Progress Bar
-                TourProgressBar(currentStep: currentStep.rawValue, totalSteps: TourStep.count)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-                
-                // MARK: - Step Content
-                ScrollView {
-                    VStack(spacing: 24) {
-                        currentStepContent
-                            .padding(.horizontal)
-                            .padding(.top, 20)
+                // Main content
+                VStack(spacing: 0) {
+                    // MARK: - Header
+                    headerView
+                    
+                    // MARK: - Progress Bar
+                    TourProgressBar(currentStep: currentStep.rawValue, totalSteps: TourStep.count)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                    
+                    // MARK: - Step Content
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            currentStepContent
+                                .padding(.horizontal)
+                                .padding(.top, 20)
+                        }
                     }
+                    
+                    Spacer()
+                    
+                    // MARK: - Navigation Buttons
+                    navigationButtons
+                        .padding()
+                        .background(Color(.systemBackground))
                 }
-                
-                Spacer()
-                
-                // MARK: - Navigation Buttons
-                navigationButtons
-                    .padding()
-                    .background(Color(.systemBackground))
+                // Auto-advance scheduling: runs on appear and when step changes
+                .onAppear { scheduleAutoAdvance() }
+                .onChange(of: currentStep) { _, _ in scheduleAutoAdvance() }
             }
-            // Auto-advance scheduling: runs on appear and when step changes
-            .onAppear { scheduleAutoAdvance() }
-            .onChange(of: currentStep) { _, _ in scheduleAutoAdvance() }
-            
-            // MARK: - Navigation to SignUp
-            // Rendered conditionally for smooth transition
-            if showSignUp {
+            .navigationDestination(isPresented: $showSignUp) {
                 SignUpView()
-                    .transition(.opacity)
             }
         }
     }
