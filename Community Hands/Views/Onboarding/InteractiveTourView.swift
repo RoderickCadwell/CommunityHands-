@@ -697,19 +697,17 @@ struct InteractiveTourView: View {
                     .multilineTextAlignment(.center)
             }
             
-            // Connection visualization
+            // Connection visualization - Using real profile images
             VStack(spacing: 20) {
-                // Homeowner
+                // Homeowner with real photo
                 HStack {
-                    ZStack {
-                        Circle()
-                            .fill(Color.orange.opacity(0.2))
-                            .frame(width: 50, height: 50)
-                        
-                        Image(systemName: "house.fill")
-                            .font(.title3)
-                            .foregroundColor(.orange)
-                    }
+                    Image("sarah-johnson")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.orange.opacity(0.3), lineWidth: 2))
+                        .accessibilityLabel("Photo of homeowner")
                     
                     VStack(alignment: .leading) {
                         Text(demoHomeowner.fullName)
@@ -739,6 +737,7 @@ struct InteractiveTourView: View {
                             Image(systemName: "checkmark")
                                 .font(.title3)
                                 .foregroundColor(.white)
+                                .accessibilityHidden(true) // Decorative checkmark
                         }
                         
                         Rectangle()
@@ -748,17 +747,15 @@ struct InteractiveTourView: View {
                     Spacer()
                 }
                 
-                // Teen
+                // Teen with real photo
                 HStack {
-                    ZStack {
-                        Circle()
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(width: 50, height: 50)
-                        
-                        Image(systemName: "person.fill")
-                            .font(.title3)
-                            .foregroundColor(.blue)
-                    }
+                    Image("marcus-williams")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                        .overlay(Circle().stroke(Color.blue.opacity(0.3), lineWidth: 2))
+                        .accessibilityLabel("Photo of helper")
                     
                     VStack(alignment: .leading) {
                         Text(demoTeen.name)
