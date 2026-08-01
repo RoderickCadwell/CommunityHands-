@@ -7,7 +7,10 @@
 
 import SwiftUI
 
-struct JobPosting: Identifiable {
+// MARK: - Job Listing (Sample Data)
+// Mock data struct for displaying job listings
+// Renamed to avoid conflict with SwiftData JobPosting model
+struct JobListing: Identifiable {
     let id = UUID()
     let title: String
     let category: String
@@ -23,18 +26,18 @@ struct JobListingsView: View {
     
     @State private var searchText = ""
     @State private var selectedCategory = "All"
-    @State private var selectedJob: JobPosting? = nil
+    @State private var selectedJob: JobListing? = nil
 
     let categories = ["All", "Lawn Care", "Pet Care", "Babysitting", "Car Wash", "Tutoring"]
 
-    let jobListings: [JobPosting] = [
-        JobPosting(title: "Lawn Mowing & Edging", category: "Lawn Care", price: 35.00, helperName: "Alex R.", rating: 4.9, description: "Front and back lawn mowing, including line trimming around edges and driveway cleanup."),
-        JobPosting(title: "Dog Walking (30 Mins)", category: "Pet Care", price: 20.00, helperName: "Sarah M.", rating: 5.0, description: "30-minute neighborhood dog walk with updates and photos provided."),
-        JobPosting(title: "Basic Car Wash & Vacuum", category: "Car Wash", price: 25.00, helperName: "Jordan T.", rating: 4.8, description: "Exterior hand wash, wheel cleaning, and interior vacuuming."),
-        JobPosting(title: "Algebra 1 Tutoring", category: "Tutoring", price: 30.00, helperName: "Maya P.", rating: 4.9, description: "One-hour interactive math tutoring session for middle or high school students.")
+    let jobListings: [JobListing] = [
+        JobListing(title: "Lawn Mowing & Edging", category: "Lawn Care", price: 35.00, helperName: "Alex R.", rating: 4.9, description: "Front and back lawn mowing, including line trimming around edges and driveway cleanup."),
+        JobListing(title: "Dog Walking (30 Mins)", category: "Pet Care", price: 20.00, helperName: "Sarah M.", rating: 5.0, description: "30-minute neighborhood dog walk with updates and photos provided."),
+        JobListing(title: "Basic Car Wash & Vacuum", category: "Car Wash", price: 25.00, helperName: "Jordan T.", rating: 4.8, description: "Exterior hand wash, wheel cleaning, and interior vacuuming."),
+        JobListing(title: "Algebra 1 Tutoring", category: "Tutoring", price: 30.00, helperName: "Maya P.", rating: 4.9, description: "One-hour interactive math tutoring session for middle or high school students.")
     ]
 
-    var filteredListings: [JobPosting] {
+    var filteredListings: [JobListing] {
         jobListings.filter { job in
             (selectedCategory == "All" || job.category == selectedCategory) &&
             (searchText.isEmpty || job.title.localizedCaseInsensitiveContains(searchText) || job.description.localizedCaseInsensitiveContains(searchText))
@@ -166,7 +169,7 @@ struct JobListingsView: View {
 }
 
 struct PurchaseConfirmationSheet: View {
-    let job: JobPosting
+    let job: JobListing
     @Environment(\.dismiss) var dismiss
     @State private var isPurchased = false
 
