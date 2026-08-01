@@ -15,6 +15,7 @@ struct InteractiveTourView: View {
     // MARK: - Environment
     @EnvironmentObject var authViewModel: AuthViewModel
     @Environment(\.dismiss) var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion // Accessibility: respect user motion preferences
     
     // MARK: - Tour State
     @State private var currentStep: TourStep = .welcome
@@ -247,6 +248,7 @@ struct InteractiveTourView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 100, height: 100)
+                .accessibilityLabel("Community Hands app icon")
             
             // Title and description
             VStack(spacing: 12) {
@@ -254,6 +256,7 @@ struct InteractiveTourView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
                 
                 Text(TourStep.welcome.description)
                     .font(.body)
@@ -268,6 +271,7 @@ struct InteractiveTourView: View {
                         Image(systemName: "house.fill")
                             .font(.system(size: 40))
                             .foregroundColor(.orange)
+                            .accessibilityHidden(true)
                         Text("Homeowners")
                             .font(.caption)
                             .fontWeight(.medium)
@@ -275,6 +279,8 @@ struct InteractiveTourView: View {
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("Homeowners post jobs")
                     
                     // Handshake emoji showing connection between homeowners and teens
                     Text("🫱🏾‍🫲🏿")

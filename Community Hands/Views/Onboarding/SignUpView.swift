@@ -34,6 +34,7 @@ struct SignUpView: View {
                         Text("Create Your Account")
                             .font(.title2)
                             .bold()
+                            .accessibilityAddTraits(.isHeader)
 
                         Text("Enter your email or phone number to get started.")
                             .font(.caption)
@@ -50,6 +51,7 @@ struct SignUpView: View {
                             )
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)
+                            .accessibilityLabel("Email or phone number")
 
                         if let errorMessage = authViewModel.errorMessage {
                             Text(errorMessage)

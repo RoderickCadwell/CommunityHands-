@@ -15,6 +15,7 @@ struct PostJobView: View {
     // MARK: - Environment
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
     // MARK: - Form State
     @State private var title: String = ""
