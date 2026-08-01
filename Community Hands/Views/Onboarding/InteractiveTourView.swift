@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Interactive Tour View
 // Guided demo walkthrough for pitch presentations
 // Pre-filled data allows smooth, fast demo without typing
-// 8 steps showing full app flow from welcome to marketplace
+// Homeowner-centric flow: shows revenue side first
 struct InteractiveTourView: View {
     // MARK: - Environment
     @EnvironmentObject var authViewModel: AuthViewModel
@@ -22,23 +22,33 @@ struct InteractiveTourView: View {
     @State private var autoAdvanceTask: Task<Void, Never>?
     
     // MARK: - Demo Data
-    // Pre-filled sample data for the tour
-    private let demoUser = DemoUser(
-        email: "demo@communityhands.app",
-        phone: "555-DEMO-001",
+    // Homeowner-focused data for pitch presentations
+    private let demoHomeowner = DemoHomeowner(
+        email: "sarah.johnson@email.com",
+        phone: "(313) 555-0198",
         fullName: "Sarah Johnson",
         idType: "Driver's License",
-        idNumber: "DEMO-ID-12345",
-        role: "Community Member",
-        bio: "Working parent looking for reliable help with yard work and pet care."
+        idNumber: "MI-DL-9876543",
+        address: "Oak Park, MI",
+        householdSize: "Family of 4",
+        avatarInitials: "SJ",
+        bio: "Working mom with two kids and a golden retriever. Need help keeping up with yard work and occasional babysitting.",
+        backgroundCheckStatus: "Verified",
+        jobTitle: "Lawn Care Needed",
+        jobDescription: "Front and back yard mowing, edging around driveway and walkways. About 1/4 acre total. Prefer weekend mornings.",
+        jobBudget: 45.00,
+        jobCategory: "Lawn Care"
     )
     
-    private let demoJobs = [
-        DemoJob(title: "Lawn Mowing & Edging", category: "Lawn Care", price: 35.00),
-        DemoJob(title: "Dog Walking (30 min)", category: "Pet Care", price: 20.00),
-        DemoJob(title: "Weekend Babysitting", category: "Child Care", price: 15.00),
-        DemoJob(title: "Car Wash & Vacuum", category: "Car Wash", price: 25.00)
-    ]
+    private let demoTeen = DemoTeen(
+        name: "Marcus Williams",
+        age: 17,
+        school: "Cass Tech High School",
+        skills: ["Lawn Care", "Dog Walking", "Basic Repairs"],
+        rating: 4.8,
+        jobsCompleted: 23,
+        initials: "MW"
+    )
     
     // Locale-aware currency formatter
     private var priceFormatter: NumberFormatter {
@@ -49,15 +59,19 @@ struct InteractiveTourView: View {
     }
     
     // MARK: - Tour Steps
+    // Homeowner-centric flow for pitch presentations
+    // Shows revenue side first: homeowner posts job, teen accepts
     enum TourStep: Int, CaseIterable {
         case welcome = 0
-        case signUp
-        case identity
-        case terms
-        case bio
-        case mainMenu
-        case marketplace
-        case complete
+        case homeownerProfile      // Avatar + demographics
+        case homeownerSignUp     // Sign up as homeowner
+        case homeownerIdentity   // ID verification
+        case homeownerTerms      // Background check emphasis
+        case createJob           // Homeowner posts job request
+        case jobPosted           // Job appears in marketplace
+        case teenAccepts         // Teen sees and accepts job
+        case matchMade           // Connection established
+        case complete            // Final CTA
         
         // Total number of steps for progress calculation
         static var count: Int { allCases.count }
@@ -67,18 +81,22 @@ struct InteractiveTourView: View {
             switch self {
             case .welcome:
                 return "Welcome to Community Hands"
-            case .signUp:
-                return "Quick Account Setup"
-            case .identity:
+            case .homeownerProfile:
+                return "Your Homeowner Profile"
+            case .homeownerSignUp:
+                return "Create Your Account"
+            case .homeownerIdentity:
                 return "Verify Your Identity"
-            case .terms:
-                return "Review Terms & Waiver"
-            case .bio:
-                return "Complete Your Profile"
-            case .mainMenu:
-                return "Find Local Help"
-            case .marketplace:
-                return "Browse Services"
+            case .homeownerTerms:
+                return "Safety First"
+            case .createJob:
+                return "Post a Job"
+            case .jobPosted:
+                return "Job Live in Marketplace"
+            case .teenAccepts:
+                return "Teen Helper Accepts"
+            case .matchMade:
+                return "Connection Made!"
             case .complete:
                 return "Ready to Get Started?"
             }
@@ -88,21 +106,25 @@ struct InteractiveTourView: View {
         var description: String {
             switch self {
             case .welcome:
-                return "A marketplace connecting teens with homeowners who need help with everyday tasks."
-            case .signUp:
-                return "Create an account with your email or phone number. In demo mode, we auto-fill this for you."
-            case .identity:
-                return "Verify your identity for safety. Homeowners require background checks to protect our teen helpers."
-            case .terms:
-                return "Review and accept the terms. Our platform connects you with local help while keeping everyone safe."
-            case .bio:
-                return "Tell us about yourself. Homeowners can see your bio when browsing for helpers."
-            case .mainMenu:
-                return "Homeowners post jobs and browse teen helpers in their neighborhood."
-            case .marketplace:
-                return "Browse available services: Lawn Care, Pet Care, Babysitting, Car Wash, and more."
+                return "A marketplace connecting homeowners with reliable teen helpers in your neighborhood."
+            case .homeownerProfile:
+                return "Add your profile picture and tell us about your household. This helps teens know who they're helping."
+            case .homeownerSignUp:
+                return "Create your free homeowner account. No fees to post jobs—only pay when work is completed."
+            case .homeownerIdentity:
+                return "Verify your identity with a driver's license or state ID. Your safety and trust are our priority."
+            case .homeownerTerms:
+                return "We require background checks for all homeowners. This protects our teen helpers and builds community trust."
+            case .createJob:
+                return "Describe what you need help with. Set your budget and preferred timing. It's that simple."
+            case .jobPosted:
+                return "Your job is now visible to verified teen helpers in your area. They can view details and apply."
+            case .teenAccepts:
+                return "Local teens see your job, check your profile, and accept if it's a good match for their skills."
+            case .matchMade:
+                return "You're connected! Schedule the work, communicate through the app, and pay securely when complete."
             case .complete:
-                return "You've seen how Community Hands works. Ready to create your real account?"
+                return "You've seen how easy it is to get help. Ready to post your first job?"
             }
         }
     }
@@ -190,23 +212,28 @@ struct InteractiveTourView: View {
     }
     
     // MARK: - Step Content
+    // Homeowner-centric flow: profile -> signup -> ID -> terms -> post job -> match -> complete
     @ViewBuilder
     private var currentStepContent: some View {
         switch currentStep {
         case .welcome:
             welcomeStepView
-        case .signUp:
-            signUpStepView
-        case .identity:
-            identityStepView
-        case .terms:
-            termsStepView
-        case .bio:
-            bioStepView
-        case .mainMenu:
-            mainMenuStepView
-        case .marketplace:
-            marketplaceStepView
+        case .homeownerProfile:
+            homeownerProfileStepView
+        case .homeownerSignUp:
+            homeownerSignUpStepView
+        case .homeownerIdentity:
+            homeownerIdentityStepView
+        case .homeownerTerms:
+            homeownerTermsStepView
+        case .createJob:
+            createJobStepView
+        case .jobPosted:
+            jobPostedStepView
+        case .teenAccepts:
+            teenAcceptsStepView
+        case .matchMade:
+            matchMadeStepView
         case .complete:
             completeStepView
         }
@@ -234,173 +261,276 @@ struct InteractiveTourView: View {
                     .multilineTextAlignment(.center)
             }
             
-            // Community connection visual
-            HStack(spacing: 40) {
-                VStack(spacing: 8) {
-                    Image(systemName: "person.fill.checkmark")
-                        .font(.system(size: 40))
-                        .foregroundColor(.blue)
-                    Text("Teens")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                    Text("Need Experience")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+            // Community connection visual - Homeowner focused
+            VStack(spacing: 16) {
+                HStack(spacing: 40) {
+                    VStack(spacing: 8) {
+                        Image(systemName: "house.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(.orange)
+                        Text("Homeowners")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                        Text("Post Jobs")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Image(systemName: "hand.raised.fill")
+                        .font(.system(size: 32))
+                        .foregroundColor(Color("primaryComHandColor"))
+                    
+                    VStack(spacing: 8) {
+                        Image(systemName: "person.fill.checkmark")
+                            .font(.system(size: 40))
+                            .foregroundColor(.blue)
+                        Text("Teens")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                        Text("Get Hired")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
-                Image(systemName: "hand.raised.fill")
-                    .font(.system(size: 32))
-                    .foregroundColor(Color("primaryComHandColor"))
+                Text("How it works")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.top, 8)
+            }
+            .padding(.top, 20)
+        }
+    }
+    
+    // MARK: - Step 2: Homeowner Profile
+    // Shows avatar, demographics, and household info
+    private var homeownerProfileStepView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(TourStep.homeownerProfile.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
                 
-                VStack(spacing: 8) {
-                    Image(systemName: "house.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.orange)
-                    Text("Homeowners")
-                        .font(.caption)
-                        .fontWeight(.medium)
-                    Text("Need Help")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+                Text(TourStep.homeownerProfile.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Profile card
+            VStack(spacing: 16) {
+                // Avatar
+                ZStack {
+                    Circle()
+                        .fill(Color("primaryComHandColor").opacity(0.2))
+                        .frame(width: 80, height: 80)
+                    
+                    Text(demoHomeowner.avatarInitials)
+                        .font(.title)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color("primaryComHandColor"))
                 }
-            }
-            .padding(.top, 20)
-        }
-    }
-    
-    // MARK: - Step 2: Sign Up
-    private var signUpStepView: some View {
-        VStack(spacing: 24) {
-            // Title
-            VStack(spacing: 8) {
-                Text(TourStep.signUp.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
                 
-                Text(TourStep.signUp.description)
-                    .font(.body)
+                // Name and location
+                VStack(spacing: 4) {
+                    Text(demoHomeowner.fullName)
+                        .font(.headline)
+                    
+                    HStack {
+                        Image(systemName: "mappin")
+                            .font(.caption)
+                        Text(demoHomeowner.address)
+                            .font(.caption)
+                    }
                     .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // Pre-filled form
-            VStack(spacing: 16) {
-                // Email field
-                TourFormField(label: "Email or Phone", value: demoUser.email)
+                }
                 
-                // Phone field
-                TourFormField(label: "Phone", value: demoUser.phone)
-            }
-            .padding(.top, 20)
-            
-            // Demo badge
-            demoBadge(text: "Pre-filled for demo")
-        }
-    }
-    
-    // MARK: - Step 3: Identity
-    private var identityStepView: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 8) {
-                Text(TourStep.identity.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                
-                Text(TourStep.identity.description)
-                    .font(.body)
+                // Demographics
+                HStack(spacing: 20) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "person.2")
+                            .font(.title3)
+                        Text(demoHomeowner.householdSize)
+                            .font(.caption2)
+                    }
                     .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            VStack(spacing: 16) {
-                TourFormField(label: "Full Name", value: demoUser.fullName)
-                TourFormField(label: "ID Type", value: demoUser.idType)
-                TourFormField(label: "ID Number", value: demoUser.idNumber)
-            }
-            .padding(.top, 20)
-            
-            demoBadge(text: "Pre-filled for demo")
-        }
-    }
-    
-    // MARK: - Step 4: Terms
-    private var termsStepView: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 8) {
-                Text(TourStep.terms.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                }
+                .padding(.top, 8)
                 
-                Text(TourStep.terms.description)
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // Mock terms content
-            VStack(alignment: .leading, spacing: 12) {
-                Text("User Agreement Preview")
-                    .font(.headline)
+                Divider()
                 
-                Text("1. Community Hands connects homeowners with teen helpers...")
+                // Bio preview
+                Text(demoHomeowner.bio)
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
-                Text("2. All users must verify identity for safety...")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                Text("3. Background checks required for homeowners...")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
             }
             .padding()
             .background(Color(.secondarySystemBackground))
-            .cornerRadius(12)
+            .cornerRadius(16)
             .padding(.top, 20)
             
-            // Pre-checked agreement
-            HStack(spacing: 12) {
-                Image(systemName: "checkmark.square.fill")
-                    .foregroundColor(Color("primaryComHandColor"))
-                
-                Text("I agree to the terms (demo)")
-                    .font(.subheadline)
-            }
-            .padding(.top, 10)
+            demoBadge(text: "Homeowner profile")
         }
     }
     
-    // MARK: - Step 5: Bio
-    private var bioStepView: some View {
+    // MARK: - Step 3: Homeowner Sign Up
+    private var homeownerSignUpStepView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(TourStep.bio.title)
+                Text(TourStep.homeownerSignUp.title)
                     .font(.title2)
                     .fontWeight(.bold)
                 
-                Text(TourStep.bio.description)
+                Text(TourStep.homeownerSignUp.description)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             
             VStack(spacing: 16) {
-                // Role selection
-                TourFormField(label: "Role", value: demoUser.role)
+                TourFormField(label: "Email", value: demoHomeowner.email)
+                TourFormField(label: "Phone", value: demoHomeowner.phone)
+                TourFormField(label: "Account Type", value: "Homeowner")
+            }
+            .padding(.top, 20)
+            
+            // Value prop
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(Color("primaryComHandColor"))
+                    Text("Free to post jobs")
+                        .font(.caption)
+                }
                 
-                // Bio text
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(Color("primaryComHandColor"))
+                    Text("Pay only when work is done")
+                        .font(.caption)
+                }
+            }
+            
+            demoBadge(text: "Pre-filled for demo")
+        }
+    }
+    
+    // MARK: - Step 4: Homeowner Identity
+    private var homeownerIdentityStepView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(TourStep.homeownerIdentity.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text(TourStep.homeownerIdentity.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            VStack(spacing: 16) {
+                TourFormField(label: "Full Name", value: demoHomeowner.fullName)
+                TourFormField(label: "ID Type", value: demoHomeowner.idType)
+                TourFormField(label: "ID Number", value: String(demoHomeowner.idNumber.prefix(6)) + "****")
+            }
+            .padding(.top, 20)
+            
+            // Security note
+            HStack(spacing: 8) {
+                Image(systemName: "lock.shield")
+                    .foregroundColor(.green)
+                Text("256-bit encrypted")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            demoBadge(text: "Pre-filled for demo")
+        }
+    }
+    
+    // MARK: - Step 5: Homeowner Terms (Background Check)
+    private var homeownerTermsStepView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(TourStep.homeownerTerms.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text(TourStep.homeownerTerms.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Background check highlight
+            VStack(spacing: 16) {
+                Image(systemName: "shield.checkered")
+                    .font(.system(size: 50))
+                    .foregroundColor(Color("primaryComHandColor"))
+                
+                Text("Background Check Required")
+                    .font(.headline)
+                
+                Text("All homeowners must pass a background check before posting jobs. This is how we protect our teen helpers.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    
+                    Text(demoHomeowner.backgroundCheckStatus)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.green)
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .padding(.top, 20)
+        }
+    }
+    
+    // MARK: - Step 6: Create Job
+    private var createJobStepView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(TourStep.createJob.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text(TourStep.createJob.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Job creation form
+            VStack(spacing: 16) {
+                TourFormField(label: "Job Title", value: demoHomeowner.jobTitle)
+                
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Bio")
+                    Text("Description")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
-                    Text(demoUser.bio)
+                    Text(demoHomeowner.jobDescription)
                         .font(.body)
                         .padding()
-                        .frame(maxWidth: .infinity, minHeight: 100, alignment: .topLeading)
+                        .frame(maxWidth: .infinity, minHeight: 80, alignment: .topLeading)
                         .background(Color(.secondarySystemBackground))
                         .cornerRadius(8)
+                }
+                
+                HStack {
+                    TourFormField(label: "Category", value: demoHomeowner.jobCategory)
+                    Spacer()
+                    TourFormField(label: "Budget", value: priceFormatter.string(from: NSNumber(value: demoHomeowner.jobBudget)) ?? "\(demoHomeowner.jobBudget)")
                 }
             }
             .padding(.top, 20)
@@ -409,137 +539,276 @@ struct InteractiveTourView: View {
         }
     }
     
-    // MARK: - Step 6: Main Menu
-    private var mainMenuStepView: some View {
+    // MARK: - Step 7: Job Posted
+    private var jobPostedStepView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(TourStep.mainMenu.title)
+                Text(TourStep.jobPosted.title)
                     .font(.title2)
                     .fontWeight(.bold)
                 
-                Text(TourStep.mainMenu.description)
+                Text(TourStep.jobPosted.description)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             
-            // Mock map area
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.secondarySystemBackground))
-                    .frame(height: 200)
-                
-                // Mock pins
-                HStack(spacing: 80) {
-                    VStack {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                        Text("Your Location")
-                            .font(.caption)
-                    }
-                    
-                    VStack {
-                        Image(systemName: "mappin.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.green)
-                        Text("Helpers Nearby")
-                            .font(.caption)
-                    }
-                }
-            }
-            .padding(.top, 20)
-            
-            // Sample job card
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Sample Job Nearby")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
+            // Job card preview
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    VStack(alignment: .leading) {
-                        Text("Lawn Mowing")
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(demoHomeowner.jobTitle)
                             .font(.headline)
-                        Text("1.2 miles away")
+                        Text(demoHomeowner.jobCategory)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                     
                     Spacer()
                     
-                    Text("$35")
+                    Text(priceFormatter.string(from: NSNumber(value: demoHomeowner.jobBudget)) ?? "\(demoHomeowner.jobBudget)")
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(Color("primaryComHandColor"))
                 }
-                .padding()
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(12)
+                
+                Divider()
+                
+                Text(demoHomeowner.jobDescription)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                
+                HStack {
+                    Image(systemName: "mappin")
+                        .font(.caption)
+                    Text(demoHomeowner.address)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Text("Just posted")
+                        .font(.caption)
+                        .foregroundColor(.green)
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .padding(.top, 20)
+            
+            // Status indicator
+            HStack(spacing: 8) {
+                Image(systemName: "eye")
+                    .foregroundColor(Color("primaryComHandColor"))
+                Text("Visible to teens in your area")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
     
-    // MARK: - Step 7: Marketplace
-    private var marketplaceStepView: some View {
+    // MARK: - Step 8: Teen Accepts
+    private var teenAcceptsStepView: some View {
         VStack(spacing: 24) {
             VStack(spacing: 8) {
-                Text(TourStep.marketplace.title)
+                Text(TourStep.teenAccepts.title)
                     .font(.title2)
                     .fontWeight(.bold)
                 
-                Text(TourStep.marketplace.description)
+                Text(TourStep.teenAccepts.description)
                     .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             
-            // Sample job listings
-            VStack(spacing: 12) {
-                ForEach(demoJobs.prefix(3), id: \.title) { job in
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(job.title)
-                                .font(.headline)
-                            Text(job.category)
+            // Teen profile card
+            VStack(spacing: 16) {
+                HStack(spacing: 16) {
+                    // Avatar
+                    ZStack {
+                        Circle()
+                            .fill(Color.blue.opacity(0.2))
+                            .frame(width: 60, height: 60)
+                        
+                        Text(demoTeen.initials)
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(demoTeen.name)
+                            .font(.headline)
+                        
+                        Text("Age \(demoTeen.age) • \(demoTeen.school)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .font(.caption2)
+                                .foregroundColor(.yellow)
+                            Text(demoTeen.rating.formatted(.number.precision(.fractionLength(1))))
+                                .font(.caption)
+                            Text("• \(demoTeen.jobsCompleted) jobs")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
-                        Spacer()
-                        
-                        Text(priceFormatter.string(from: NSNumber(value: job.price)) ?? "$\(job.price)")
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(Color("primaryComHandColor"))
                     }
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(12)
+                    
+                    Spacer()
                 }
-            }
-            .padding(.top, 20)
-            
-            // Category pills
-            ScrollView(.horizontal, showsIndicators: false) {
+                
+                Divider()
+                
+                // Skills as simple text
+                Text("Skills: \(demoTeen.skills.joined(separator: ", "))")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                
+                // Acceptance
                 HStack(spacing: 8) {
-                    ForEach(["All", "Lawn Care", "Pet Care", "Babysitting"], id: \.self) { category in
-                        Text(category)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule()
-                                    .fill(category == "All" ? Color("primaryComHandColor") : Color(.secondarySystemBackground))
-                            )
-                            .foregroundColor(category == "All" ? .white : .primary)
-                    }
+                    Image(systemName: "hand.thumbsup.fill")
+                        .foregroundColor(.green)
+                    Text("\(demoTeen.name) wants to help!")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.green)
                 }
+                .padding(.top, 8)
             }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .padding(.top, 20)
         }
     }
     
-    // MARK: - Step 8: Complete
+    // MARK: - Step 9: Match Made
+    private var matchMadeStepView: some View {
+        VStack(spacing: 24) {
+            VStack(spacing: 8) {
+                Text(TourStep.matchMade.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                
+                Text(TourStep.matchMade.description)
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            
+            // Connection visualization
+            VStack(spacing: 20) {
+                // Homeowner
+                HStack {
+                    ZStack {
+                        Circle()
+                            .fill(Color.orange.opacity(0.2))
+                            .frame(width: 50, height: 50)
+                        
+                        Image(systemName: "house.fill")
+                            .font(.title3)
+                            .foregroundColor(.orange)
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text(demoHomeowner.fullName)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text("Homeowner")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+                
+                // Connection line
+                HStack {
+                    Spacer()
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .fill(Color("primaryComHandColor"))
+                            .frame(width: 2, height: 30)
+                        
+                        ZStack {
+                            Circle()
+                                .fill(Color("primaryComHandColor"))
+                                .frame(width: 40, height: 40)
+                            
+                            Image(systemName: "checkmark")
+                                .font(.title3)
+                                .foregroundColor(.white)
+                        }
+                        
+                        Rectangle()
+                            .fill(Color("primaryComHandColor"))
+                            .frame(width: 2, height: 30)
+                    }
+                    Spacer()
+                }
+                
+                // Teen
+                HStack {
+                    ZStack {
+                        Circle()
+                            .fill(Color.blue.opacity(0.2))
+                            .frame(width: 50, height: 50)
+                        
+                        Image(systemName: "person.fill")
+                            .font(.title3)
+                            .foregroundColor(.blue)
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text(demoTeen.name)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text("Helper")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+            }
+            .padding()
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+            .padding(.top, 20)
+            
+            // Next steps
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 8) {
+                    Image(systemName: "1.circle.fill")
+                        .foregroundColor(Color("primaryComHandColor"))
+                    Text("Message to confirm details")
+                        .font(.caption)
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "2.circle.fill")
+                        .foregroundColor(Color("primaryComHandColor"))
+                    Text("Schedule the work")
+                        .font(.caption)
+                }
+                
+                HStack(spacing: 8) {
+                    Image(systemName: "3.circle.fill")
+                        .foregroundColor(Color("primaryComHandColor"))
+                    Text("Pay securely when complete")
+                        .font(.caption)
+                }
+            }
+            .padding(.top, 10)
+        }
+    }
+    
+    // MARK: - Step 10: Complete
     private var completeStepView: some View {
         VStack(spacing: 32) {
             Spacer()
@@ -570,7 +839,7 @@ struct InteractiveTourView: View {
             if currentStep == .complete {
                 // Final step: Start real sign up
                 Button(action: startRealSignUp) {
-                    Text("Start Real Sign Up")
+                    Text("Join our Community")
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -716,21 +985,32 @@ struct TourFormField: View {
 }
 
 // MARK: - Demo Data Models
-// Sample data for the tour
-struct DemoUser {
+// Homeowner-focused sample data for pitch presentations
+struct DemoHomeowner {
     let email: String
     let phone: String
     let fullName: String
     let idType: String
     let idNumber: String
-    let role: String
+    let address: String
+    let householdSize: String
+    let avatarInitials: String
     let bio: String
+    let backgroundCheckStatus: String
+    let jobTitle: String
+    let jobDescription: String
+    let jobBudget: Double
+    let jobCategory: String
 }
 
-struct DemoJob {
-    let title: String
-    let category: String
-    let price: Double
+struct DemoTeen {
+    let name: String
+    let age: Int
+    let school: String
+    let skills: [String]
+    let rating: Double
+    let jobsCompleted: Int
+    let initials: String
 }
 
 // MARK: - Preview
