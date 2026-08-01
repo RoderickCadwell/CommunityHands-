@@ -121,8 +121,8 @@ struct HelperRowView: View {
     
     var body: some View {
         HStack(spacing: 16) {
-            // Avatar
-            if let avatarName = helper.avatarImageName {
+            // Avatar - check for non-empty string, not just non-nil
+            if let avatarName = helper.avatarImageName, !avatarName.isEmpty {
                 Image(avatarName)
                     .resizable()
                     .scaledToFill()

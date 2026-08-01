@@ -23,6 +23,8 @@ struct JobDetailView: View {
     @State private var showDeleteConfirmation: Bool = false
     @State private var showEditSheet: Bool = false
     @State private var isDeleted: Bool = false
+    @State private var showDeleteError: Bool = false
+    @State private var deleteErrorMessage: String = ""
     
     var body: some View {
         ScrollView {
@@ -135,6 +137,11 @@ struct JobDetailView: View {
         } message: {
             Text("This will permanently remove this job posting.")
         }
+        .alert("Error", isPresented: $showDeleteError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(deleteErrorMessage)
+        }
         .sheet(isPresented: $showEditSheet) {
             // EditJobView would go here
             Text("Edit functionality coming in Phase 6")
@@ -151,8 +158,8 @@ struct JobDetailView: View {
             try modelContext.save()
             dismiss()
         } catch {
-            // Handle error
-            print("Failed to delete job: \(error)")
+            deleteErrorMessage = "Failed to delete job: \(error.localizedDescription)"
+            showDeleteError = true
         }
     }
     

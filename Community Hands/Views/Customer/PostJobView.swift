@@ -127,11 +127,13 @@ struct PostJobView: View {
     
     // MARK: - Validation
     // Check if form has minimum required fields
+    // - Trim whitespace from strings
+    // - Price must be positive (> 0)
     private var isFormValid: Bool {
-        !title.isEmpty &&
-        !jobDescription.isEmpty &&
+        !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+        !jobDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !priceString.isEmpty &&
-        priceDecimal != nil
+        (priceDecimal.map { $0 > 0 } ?? false)
     }
     
     // Convert price string to Decimal

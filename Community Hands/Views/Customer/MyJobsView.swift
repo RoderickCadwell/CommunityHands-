@@ -61,12 +61,10 @@ struct MyJobsView: View {
     }
     
     // MARK: - Filtered Jobs
-    // Show jobs based on selected tab
+    // Show jobs based on selected tab (Active vs Completed)
     // NOTE: In production, also filter by current homeowner ID
     private var filteredJobs: [JobPosting] {
-        // For demo, show all jobs
-        // In production: allJobs.filter { $0.homeownerId == currentUserId }
-        allJobs
+        allJobs.filter { $0.isActive == (selectedTab == .active) }
     }
 }
 
