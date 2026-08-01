@@ -6,11 +6,11 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-**Phase 4: SwiftData Models**
+**Phase 6: Teen (Helper) Flow**
 
 **Status:** 🔄 IN PROGRESS
 **Date:** 2026-08-01
-**Branch:** `feature/swiftdata-models`
+**Branch:** `feature/teen-flow`
 
 ---
 
