@@ -6,12 +6,80 @@ Update this file after every meaningful implementation change.
 
 ## Current Phase
 
-**Phase 1: Add Splash Screen**
+**Phase 4: SwiftData Models**
 
-**Status:** ✅ COMPLETE
+**Status:** 🔄 IN PROGRESS
 **Date:** 2026-08-01
-**Branch:** `fix/add-splash-screen`
-**Commit:** `54b89b9`
+**Branch:** `feature/swiftdata-models`
+
+---
+
+## Completed Phases
+
+### Phase 1: Add Splash Screen ✅
+
+**Status:** COMPLETE
+**Date:** 2026-08-01
+**Branch:** `fix/add-splash-screen` (merged)
+**Commits:** `54b89b9`, `1257f34`
+
+**Changes:**
+- Created `SplashScreen.swift` with branded animation
+- Soft gradient background, logo scale + fade
+- Tagline: "Connecting Teens & Homeowners"
+- Community connection visual: handshake emoji
+- Core values: WORK, LEARN, EARN, GROW
+- Updated `Community_HandsApp.swift` entry point
+- ZStack conditional rendering with `.transition(.opacity)`
+
+---
+
+### Phase 2: Interactive Demo Tour ✅
+
+**Status:** COMPLETE
+**Date:** 2026-08-01
+**Branch:** `feature/interactive-tour` (merged)
+**Commits:** `c1d2e3f`, `4a5b6c7`
+
+**Changes:**
+- Created `InteractiveTourView.swift` — 10-step guided demo
+- Homeowner-centric flow for pitch presentations
+- Pre-filled data (Sarah Johnson + Marcus Williams)
+- Real profile images in Assets.xcassets
+- Progress bar with 8-second auto-advance
+- Tour Progress: Welcome → Profile → SignUp → Identity → Terms → CreateJob → JobPosted → TeenAccepts → MatchMade → Complete
+- CTA: "Join our Community" → SignUpView
+- Locale-aware currency formatting
+- Accessibility hidden on images (names shown adjacent)
+
+**Files Added:**
+- `Community Hands/Views/Onboarding/InteractiveTourView.swift`
+- `Community Hands/Assets.xcassets/sarah-johnson.imageset/`
+- `Community Hands/Assets.xcassets/marcus-williams.imageset/`
+
+---
+
+### Phase 3: WelcomeView Navigation ✅
+
+**Status:** COMPLETE
+**Date:** 2026-08-01
+**Branch:** `feature/welcome-navigation` (merged)
+**Commits:** `8d9e0f1`
+
+**Changes:**
+- Updated `WelcomeView.swift` navigation structure
+- Changed "Get Started" Button → NavigationLink "Come in our Neighborhood"
+- Destination: InteractiveTourView (not direct SignUp)
+- Changed "Log in" Button → NavigationLink (for consistency)
+- Removed `showLoadingScreen` state
+- Removed `navigateToSignUp` state
+- Removed LoadingView overlay
+- Clean declarative NavigationLink approach
+
+**New Flow:**
+```
+WelcomeView → "Come in our Neighborhood" → InteractiveTourView → "Join our Community" → SignUpView
+```
 
 ---
 
@@ -21,17 +89,15 @@ Update this file after every meaningful implementation change.
 
 | Issue | File | Description | Severity |
 |-------|------|-------------|----------|
-| #1 | `Community_HandsApp.swift` | **No SplashScreen** — launches directly to WelcomeView | Critical |
-| #2 | `ContentView.swift` | Creates own `@StateObject AuthViewModel` instead of shared | Critical |
-
-**Note:** Issues #1-#3 from previous review were INCORRECT. WelcomeView should be entry point (after SplashScreen), and its NavigationStack is correct.
+| #1 | `Community_HandsApp.swift` | **No SplashScreen** — launches directly to WelcomeView | **FIXED** |
+| #2 | `WelcomeView.swift` | Uses Button with loading instead of NavigationLink | **FIXED** |
 
 ### 🟡 Medium Issues
 
 | Issue | File | Description | Severity |
 |-------|------|-------------|----------|
 | #4 | `MainMenuView.swift` | Confusing dual-persona UI | Medium |
-| #5 | `Models/JobPosting.swift` | Contains views, not just models | Medium |
+| #5 | `Models/JobPosting.swift` | Contains views, not just models | Medium (Phase 4) |
 
 ### 🟢 Low Issues
 
@@ -44,60 +110,7 @@ Update this file after every meaningful implementation change.
 
 ## Implementation Plan
 
-### Phase 1: Add Splash Screen (AWAITING AUTHORIZATION)
-
-**Objective:** Add SplashScreen as entry point with animation, then transition to WelcomeView
-
-**Branch:** `fix/add-splash-screen` (to be created)
-
-**Tasks:**
-- [ ] Create branch `fix/add-splash-screen`
-- [ ] Create `SplashScreen.swift` — animated logo, feature pills, transition to WelcomeView
-- [ ] Update `Community_HandsApp.swift` — change entry point from `WelcomeView()` to `SplashScreen()`
-- [ ] (Optional) Fix `ContentView.swift` — change `@StateObject` to `@EnvironmentObject` for shared AuthViewModel
-- [ ] Test: Splash → Welcome → SignUp flow works
-- [ ] Merge to main after approval
-
-**Depends on:** Tone's authorization
-
----
-
-## Completed Work
-
-### Initial Code Review (2026-08-01) ✅
-
-**Reviewer:** Abraham (AI Assistant)
-**Completed:**
-- [x] Read all Swift files in `Community Hands/` directory
-- [x] Documented project structure
-- [x] Identified critical issues
-- [x] Created AGENTS.md
-- [x] Created context/project-overview.md
-- [x] Created context/ai-workflow-rules.md
-- [x] Created context/architecture.md
-- [x] Created context/code-standards.md
-- [x] Created context/ui-context.md
-- [x] Created context/notes/2026-08-01-initial-review.md
-- [x] Created context/implementation/phase-1-auth-flow-fix.md
-
-**Notes:** Full documentation complete. Ready to execute Phase 1 fixes once authorized.
-
----
-
-## What's Working Well ✅
-
-1. **LoadingView.swift** — Excellent animation system with Task cancellation
-2. **TermsAndPoliciesView.swift** — Comprehensive legal text with validation
-3. **AuthViewModel.swift** — Correct @AppStorage usage
-4. **Color Assets** — Properly configured with dark mode
-5. **Job acceptance flow** — Loading → confirmation pattern
-6. **Git history** — Clean commits
-
----
-
-## Next Up (After Phase 1)
-
-### Phase 2: SwiftData Models
+### Phase 4: SwiftData Models (IN PROGRESS)
 
 **Objective:** Create proper SwiftData models for local persistence
 
@@ -115,12 +128,11 @@ Update this file after every meaningful implementation change.
 - [ ] Define all @Model classes
 - [ ] Update App entry point with ModelContainer
 - [ ] Create sample data for previews
-
-**Depends on:** Phase 1 completion
+- [ ] Update progress-tracker.md
 
 ---
 
-### Phase 3: Homeowner (Customer) Flow - PRIORITY
+### Phase 5: Homeowner (Customer) Flow - PRIORITY
 
 **Objective:** Build revenue-generating customer features
 
@@ -132,11 +144,11 @@ Update this file after every meaningful implementation change.
 - [ ] `HelperBrowserView` — Browse teen helpers
 - [ ] `JobDetailView` — View job details
 
-**Depends on:** Phase 2 completion
+**Depends on:** Phase 4 completion
 
 ---
 
-### Phase 4: Teen (Helper) Flow
+### Phase 6: Teen (Helper) Flow
 
 **Objective:** Complete helper-side features
 
@@ -147,17 +159,34 @@ Update this file after every meaningful implementation change.
 - [ ] `EarningsView` — Track completed jobs and earnings
 - [ ] `JobAcceptance` improvements
 
-**Depends on:** Phase 3 completion
+**Depends on:** Phase 5 completion
 
 ---
 
-## Open Questions
+### Phase 7: Apple Accessibility Feature
 
-| Question | Status | Notes |
-|----------|--------|-------|
-| Should WelcomeView be restored to Tone's design? | **Answered** | Fix structure only, don't redesign |
-| Is the current MainMenuView for Helper or Customer? | **Answered** | Created by AI, doesn't make sense for customer side. Needs review |
-| Should we keep the mock map in MainMenuView? | **Answered** | Keep canvas-based mock |
+**Objective:** Add accessibility feature for contest
+
+**Branch:** `feature/accessibility`
+
+**Options:**
+- VoiceOver support (.accessibilityLabel, .accessibilityHint)
+- Dynamic Type support
+- Reduce Motion support
+- High Contrast mode
+
+**Decision:** TBD on Monday per Tone
+
+---
+
+## What's Working Well ✅
+
+1. **SplashScreen** — Smooth branded entry animation
+2. **InteractiveTour** — Pitch-ready 10-step demo with real images
+3. **WelcomeView** — Clean NavigationLink pattern
+4. **LoadingView.swift** — Excellent animation system
+5. **Color Assets** — Properly configured with dark mode
+6. **Git workflow** — Feature branches, clean commits
 
 ---
 
@@ -166,10 +195,11 @@ Update this file after every meaningful implementation change.
 | Decision | Status | Reason |
 |----------|--------|--------|
 | SwiftData for persistence | Decided | Local-only per requirements |
-| SplashScreen as entry point | Decided | Shows animation before WelcomeView |
-| Keep WelcomeView navigation | Decided | Existing flow works, no RootView needed |
+| SplashScreen as entry point | ✅ Implemented | Shows animation before WelcomeView |
+| WelcomeView → Tour → SignUp | ✅ Implemented | Homeowner-centric flow for pitch |
 | Single AuthViewModel | Decided | Fix duplicate instances |
 | Customer side priority | Decided | Revenue-generating features first |
+| Handshake emoji (🫱🏾‍🫲🏿) | ✅ Implemented | Shows connection, not stop |
 
 ---
 
@@ -179,17 +209,9 @@ Update this file after every meaningful implementation change.
 - **All changes need explanatory comments** explaining the block
 - **Never work on main branch** — create feature branches
 - **Tone's design authority:** Do not redesign WelcomeView without explicit instruction
-- **Apple Accessibility Contest:** Team needs one accessibility feature for prize entry (TBD which one - to be determined on Monday)
-
----
-
-## Summary
-
-**Documentation:** ✅ Complete
-**Phase 1 Planning:** ✅ Complete
-**Authorization:** ⏳ Awaiting Tone's approval
-**Execution:** ⏳ Blocked until authorized
+- **Apple Accessibility Contest:** Team needs one accessibility feature for prize entry (TBD Monday)
 
 ---
 
 *Community Hands — Progress Tracker*
+*Last Updated: 2026-08-01*
