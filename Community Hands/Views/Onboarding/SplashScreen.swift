@@ -9,108 +9,149 @@ import SwiftUI
 
 // MARK: - Splash Screen
 // Entry point for Community Hands app
-// Shows branded animation with logo and feature highlights
+// Shows branded animation representing community connection
+// Teens and Homeowners coming together to help each other
 // Transitions to WelcomeView after animation completes
-// Minimum 1.5s display time for app initialization
 struct SplashScreen: View {
     // MARK: - Animation State
-    // Tracks whether to show WelcomeView (animation complete)
     @State private var isActive = false
     
-    // Logo animation states
+    // Logo animation
     @State private var logoScale: CGFloat = 0.8
     @State private var logoOpacity: Double = 0
     
-    // Text animation states
-    @State private var textOpacity: Double = 0
+    // Title animation
+    @State private var titleOpacity: Double = 0
+    @State private var titleOffset: CGFloat = 20
+    
+    // Tagline animation
     @State private var taglineOpacity: Double = 0
     
-    // Feature pills animation
-    @State private var pillsOpacity: Double = 0
-    @State private var pillsOffset: CGFloat = 30
+    // Community connection animation
+    @State private var connectionOpacity: Double = 0
+    @State private var helperOffset: CGFloat = -50
+    @State private var homeownerOffset: CGFloat = 50
+    
+    // Core values animation
+    @State private var valuesOpacity: Double = 0
 
     // MARK: - Animation Timing
-    // Defines the delays for sequential animations
-    // Logo appears first, then text, then pills scroll
-    private let logoAnimationDelay: Double = 0.2
-    private let textAnimationDelay: Double = 0.5
-    private let taglineAnimationDelay: Double = 0.7
-    private let pillsAnimationDelay: Double = 0.9
-    private let transitionDelay: Double = 2.5
-    
-    // MARK: - Feature Pills Data
-    // MVP features to display in scrolling pills
-    private let features = [
-        "Lawn Care",
-        "Pet Care",
-        "Babysitting",
-        "Car Wash",
-        "Tutoring"
-    ]
+    private let logoDelay: Double = 0.2
+    private let titleDelay: Double = 0.6
+    private let taglineDelay: Double = 0.9
+    private let connectionDelay: Double = 1.2
+    private let valuesDelay: Double = 1.6
+    private let transitionDelay: Double = 3.0
 
     var body: some View {
         ZStack {
             // MARK: - Background
-            // Clean white background for branded look
-            Color.white.ignoresSafeArea()
+            // Soft gradient background representing community and growth
+            LinearGradient(
+                colors: [
+                    Color.white,
+                    Color("primaryComHandColor").opacity(0.05)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
 
-            // MARK: - Main Content Stack
-            VStack(spacing: 30) {
+            // MARK: - Main Content
+            VStack(spacing: 0) {
                 Spacer()
 
-                // MARK: - Logo Section
-                // Community Hands logo with scale animation
-                Image("logo")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 150, height: 150)
-                    .scaleEffect(logoScale)
-                    .opacity(logoOpacity)
+                // MARK: - Logo & Title Section
+                VStack(spacing: 16) {
+                    // App Logo
+                    Image("logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 140, height: 140)
+                        .scaleEffect(logoScale)
+                        .opacity(logoOpacity)
 
-                // MARK: - App Name
-                // "Community Hands" title with brand color
-                Text("Community Hands")
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundColor(Color("primaryComHandColor"))
-                    .opacity(textOpacity)
+                    // App Name
+                    Text("Community Hands")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(Color("primaryComHandColor"))
+                        .opacity(titleOpacity)
+                        .offset(y: titleOffset)
 
-                // MARK: - Tagline
-                // Brand tagline describing the mission
-                Text("WORK. LEARN. EARN. GROW.")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.gray)
-                    .opacity(taglineOpacity)
-
-                Spacer()
-
-                // MARK: - Feature Pills
-                // Horizontal scrolling pills showing MVP features
-                // Auto-scrolls to show all available services
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(features, id: \.self) { feature in
-                            FeaturePill(text: feature)
-                        }
-                    }
-                    .padding(.horizontal, 20)
+                    // Tagline
+                    Text("Connecting Teens & Homeowners")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .opacity(taglineOpacity)
                 }
-                .opacity(pillsOpacity)
-                .offset(y: pillsOffset)
-                .disabled(true) // Disable user interaction, just visual
+
+                Spacer()
+
+                // MARK: - Community Connection Visual
+                // Animated representation of teens helping homeowners
+                ZStack {
+                    // Connection line between personas
+                    HStack(spacing: 60) {
+                        // Teen Helper side
+                        VStack(spacing: 8) {
+                            Image(systemName: "person.fill.checkmark")
+                                .font(.system(size: 44))
+                                .foregroundColor(.blue)
+                            
+                            Text("Teens")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                            
+                            Text("Need Experience")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        .offset(x: helperOffset)
+                        
+                        // Connection icon
+                        Image(systemName: "hand.raised.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(Color("primaryComHandColor"))
+                            .opacity(connectionOpacity)
+                        
+                        // Homeowner side
+                        VStack(spacing: 8) {
+                            Image(systemName: "house.fill")
+                                .font(.system(size: 44))
+                                .foregroundColor(.orange)
+                            
+                            Text("Homeowners")
+                                .font(.caption)
+                                .fontWeight(.medium)
+                            
+                            Text("Need Help")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        .offset(x: homeownerOffset)
+                    }
+                }
+                .opacity(connectionOpacity)
+
+                Spacer()
+
+                // MARK: - Core Values
+                // Four pillars of the platform
+                HStack(spacing: 16) {
+                    ValueItem(icon: "briefcase.fill", text: "WORK")
+                    ValueItem(icon: "book.fill", text: "LEARN")
+                    ValueItem(icon: "dollarsign.circle.fill", text: "EARN")
+                    ValueItem(icon: "arrow.up.circle.fill", text: "GROW")
+                }
+                .opacity(valuesOpacity)
 
                 Spacer()
             }
             .padding(.vertical, 40)
         }
-        // MARK: - Animation Sequence
-        // Triggers when view appears
         .onAppear {
             startAnimationSequence()
         }
-        // MARK: - Navigation
-        // Full screen cover transitions to WelcomeView
-        // Uses opacity transition for smooth fade
         .fullScreenCover(isPresented: $isActive) {
             WelcomeView()
                 .transition(.opacity)
@@ -118,37 +159,39 @@ struct SplashScreen: View {
     }
 
     // MARK: - Animation Sequence
-    // Coordinates all animations with timing
-    // Step 1: Logo scales up and fades in
-    // Step 2: App name fades in
-    // Step 3: Tagline fades in
-    // Step 4: Feature pills fade in and slide up
-    // Step 5: After delay, transition to WelcomeView
+    // Unique to Community Hands - tells the story of connection
     private func startAnimationSequence() {
-        // Step 1: Logo animation (scale + fade)
-        withAnimation(.easeOut(duration: 0.6).delay(logoAnimationDelay)) {
+        // Step 1: Logo appears
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(logoDelay)) {
             logoScale = 1.0
             logoOpacity = 1.0
         }
 
-        // Step 2: App name fade in
-        withAnimation(.easeOut(duration: 0.5).delay(textAnimationDelay)) {
-            textOpacity = 1.0
+        // Step 2: Title slides up and fades in
+        withAnimation(.easeOut(duration: 0.5).delay(titleDelay)) {
+            titleOpacity = 1.0
+            titleOffset = 0
         }
 
-        // Step 3: Tagline fade in
-        withAnimation(.easeOut(duration: 0.5).delay(taglineAnimationDelay)) {
+        // Step 3: Tagline appears
+        withAnimation(.easeOut(duration: 0.4).delay(taglineDelay)) {
             taglineOpacity = 1.0
         }
 
-        // Step 4: Feature pills fade in and slide up
-        withAnimation(.easeOut(duration: 0.5).delay(pillsAnimationDelay)) {
-            pillsOpacity = 1.0
-            pillsOffset = 0
+        // Step 4: Community connection visual
+        // Teens and homeowners "come together"
+        withAnimation(.spring(response: 0.8, dampingFraction: 0.7).delay(connectionDelay)) {
+            connectionOpacity = 1.0
+            helperOffset = 0
+            homeownerOffset = 0
         }
 
-        // Step 5: Transition to WelcomeView after total duration
-        // Gives user time to see all branding elements
+        // Step 5: Core values appear
+        withAnimation(.easeOut(duration: 0.5).delay(valuesDelay)) {
+            valuesOpacity = 1.0
+        }
+
+        // Step 6: Transition to WelcomeView
         DispatchQueue.main.asyncAfter(deadline: .now() + transitionDelay) {
             withAnimation(.easeInOut(duration: 0.5)) {
                 isActive = true
@@ -157,29 +200,29 @@ struct SplashScreen: View {
     }
 }
 
-// MARK: - Feature Pill
-// Small badge showing an MVP feature/service
-// Used in horizontal scroll view on splash screen
-struct FeaturePill: View {
+// MARK: - Value Item
+// Displays one of the four core values with icon
+// WORK, LEARN, EARN, GROW
+struct ValueItem: View {
+    let icon: String
     let text: String
 
     var body: some View {
-        Text(text)
-            .font(.caption)
-            .fontWeight(.semibold)
-            .foregroundColor(.white)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 10)
-            .background(
-                Capsule()
-                    .fill(Color("primaryComHandColor"))
-            )
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(Color("primaryComHandColor"))
+            
+            Text(text)
+                .font(.caption2)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
+        }
+        .frame(width: 60)
     }
 }
 
 // MARK: - Preview
-// In-memory container for preview
-// Shows splash screen with sample animation state
 #Preview {
     SplashScreen()
 }
