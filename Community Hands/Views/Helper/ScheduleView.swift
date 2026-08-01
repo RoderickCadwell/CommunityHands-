@@ -97,7 +97,7 @@ struct ScheduleJobRow: View {
             }
             
             // Status badge
-            StatusBadge(text: job.status, color: statusColor)
+            ScheduleStatusBadge(text: job.status, color: statusColor)
         }
         .padding(.vertical, 4)
     }
@@ -161,8 +161,8 @@ struct StatusCircle: View {
     }
 }
 
-// MARK: - Status Badge
-struct StatusBadge: View {
+// MARK: - Schedule Status Badge
+struct ScheduleStatusBadge: View {
     let text: String
     let color: Color
     

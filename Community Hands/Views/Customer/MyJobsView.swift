@@ -99,7 +99,7 @@ struct JobRowView: View {
                         .cornerRadius(8)
                     
                     // Status indicator
-                    StatusBadge(isActive: job.isActive)
+                    JobStatusBadge(isActive: job.isActive)
                     
                     Spacer()
                     
@@ -140,9 +140,9 @@ struct JobRowView: View {
     }
 }
 
-// MARK: - Status Badge
-// Shows job status indicator
-struct StatusBadge: View {
+// MARK: - Job Status Badge
+// Shows job status indicator (Active/Inactive)
+struct JobStatusBadge: View {
     let isActive: Bool
     
     var body: some View {
