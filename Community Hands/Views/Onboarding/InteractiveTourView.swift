@@ -319,17 +319,13 @@ struct InteractiveTourView: View {
             
             // Profile card
             VStack(spacing: 16) {
-                // Avatar
-                ZStack {
-                    Circle()
-                        .fill(Color("primaryComHandColor").opacity(0.2))
-                        .frame(width: 80, height: 80)
-                    
-                    Text(demoHomeowner.avatarInitials)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color("primaryComHandColor"))
-                }
+                // Avatar - real image
+                Image("sarah-johnson")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 80, height: 80)
+                    .clipShape(Circle())
+                    .accessibilityHidden(true) // Name is shown below, no need for VoiceOver to announce filename
                 
                 // Name and location
                 VStack(spacing: 4) {
@@ -626,17 +622,13 @@ struct InteractiveTourView: View {
             // Teen profile card
             VStack(spacing: 16) {
                 HStack(spacing: 16) {
-                    // Avatar
-                    ZStack {
-                        Circle()
-                            .fill(Color.blue.opacity(0.2))
-                            .frame(width: 60, height: 60)
-                        
-                        Text(demoTeen.initials)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(.blue)
-                    }
+                    // Avatar - real image
+                    Image("marcus-williams")
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(Circle())
+                        .accessibilityHidden(true) // Name is shown next to image, no need for VoiceOver to announce filename
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(demoTeen.name)
