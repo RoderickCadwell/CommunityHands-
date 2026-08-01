@@ -24,6 +24,8 @@ struct LoadingView: View {
     @State private var bounceOffset: CGFloat = -10
     @State private var isCompletedStage: Bool = false
     @State private var progressText: String = ""
+    @State private var animationSequenceTask: Task<Void, Never>?
+    @State private var activeSequenceID: UUID = UUID()
 
     var body: some View {
         ZStack {
@@ -151,8 +153,17 @@ struct LoadingView: View {
             }
         }
         .onAppear {
+            animationSequenceTask?.cancel()
+            animationSequenceTask = nil
+            activeSequenceID = UUID()
+            isCompletedStage = false
+            bounceOffset = -10
             setupInitialText()
             startAnimationSequence()
+        }
+        .onDisappear {
+            animationSequenceTask?.cancel()
+            animationSequenceTask = nil
         }
     }
 
@@ -174,13 +185,21 @@ struct LoadingView: View {
     }
 
     private func startAnimationSequence() {
-        // Step 1: Gentle bounce animation
-        withAnimation(Animation.easeInOut(duration: 0.5).repeatCount(4, autoreverses: true)) {
-            bounceOffset = 10
-        }
+        let sequenceID = activeSequenceID
+        animationSequenceTask?.cancel()
 
-        // Step 2: Transition to completion stage
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+        animationSequenceTask = Task { @MainActor in
+            guard !Task.isCancelled, activeSequenceID == sequenceID else { return }
+
+            // Step 1: Gentle bounce animation
+            withAnimation(Animation.easeInOut(duration: 0.5).repeatCount(4, autoreverses: true)) {
+                bounceOffset = 10
+            }
+
+            try? await Task.sleep(nanoseconds: UInt64(1.6 * 1_000_000_000))
+            guard !Task.isCancelled, activeSequenceID == sequenceID else { return }
+
+            // Step 2: Transition to completion stage
             withAnimation(.spring()) {
                 isCompletedStage = true
                 switch mode {
@@ -198,10 +217,11 @@ struct LoadingView: View {
                     progressText = "Job accepted! Details sent to client."
                 }
             }
-        }
 
-        // Step 3: Finish loading and transition screen
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+            try? await Task.sleep(nanoseconds: UInt64(1.4 * 1_000_000_000))
+            guard !Task.isCancelled, activeSequenceID == sequenceID else { return }
+
+            // Step 3: Finish loading and transition screen
             withAnimation(.easeOut(duration: 0.4)) {
                 isLoading = false
                 onComplete()
