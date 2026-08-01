@@ -148,13 +148,17 @@ struct SplashScreen: View {
                 Spacer()
             }
             .padding(.vertical, 40)
+            
+            // MARK: - Welcome View Transition
+            // Rendered conditionally in ZStack for smooth opacity transition
+            // Replaces fullScreenCover which has non-overrideable system transition
+            if isActive {
+                WelcomeView()
+                    .transition(.opacity)
+            }
         }
         .onAppear {
             startAnimationSequence()
-        }
-        .fullScreenCover(isPresented: $isActive) {
-            WelcomeView()
-                .transition(.opacity)
         }
     }
 
