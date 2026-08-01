@@ -90,6 +90,7 @@ Community Hands provides a **two-sided marketplace** where:
 - Bio/profile completion
 - SwiftData persistence for user data
 - **Apple Accessibility Feature** (TBD - placeholder for contest entry)
+- **Interactive Demo Tour** — Pre-filled walkthrough for pitch presentations
 
 #### Homeowner (Customer) Features - PRIORITY
 - **Job Creation:** Post jobs with title, category, description, price
@@ -157,6 +158,7 @@ The following features are planned for future builds:
 - SwiftData persistence for all data
 - Loading animations and transitions
 - Clean UI matching Community Hands branding
+- **Interactive Demo Tour** — For pitch presentations (pre-filled data, guided walkthrough)
 
 ### Out of Scope (Future)
 
