@@ -19,6 +19,7 @@ struct InteractiveTourView: View {
     // MARK: - Tour State
     @State private var currentStep: TourStep = .welcome
     @State private var showSignUp = false
+    @State private var autoAdvanceTask: Task<Void, Never>?
     
     // MARK: - Demo Data
     // Pre-filled sample data for the tour
@@ -38,6 +39,14 @@ struct InteractiveTourView: View {
         DemoJob(title: "Weekend Babysitting", category: "Child Care", price: 15.00),
         DemoJob(title: "Car Wash & Vacuum", category: "Car Wash", price: 25.00)
     ]
+    
+    // Locale-aware currency formatter
+    private var priceFormatter: NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.locale = Locale.current
+        return formatter
+    }
     
     // MARK: - Tour Steps
     enum TourStep: Int, CaseIterable {
@@ -131,6 +140,9 @@ struct InteractiveTourView: View {
                     .padding()
                     .background(Color(.systemBackground))
             }
+            // Auto-advance scheduling: runs on appear and when step changes
+            .onAppear { scheduleAutoAdvance() }
+            .onChange(of: currentStep) { _, _ in scheduleAutoAdvance() }
             
             // MARK: - Navigation to SignUp
             // Rendered conditionally for smooth transition
@@ -414,7 +426,7 @@ struct InteractiveTourView: View {
             // Mock map area
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(red: 0.93, green: 0.95, blue: 0.91))
+                    .fill(Color(.secondarySystemBackground))
                     .frame(height: 200)
                 
                 // Mock pins
@@ -495,7 +507,7 @@ struct InteractiveTourView: View {
                         
                         Spacer()
                         
-                        Text("$\(String(format: "%.2f", job.price))")
+                        Text(priceFormatter.string(from: NSNumber(value: job.price)) ?? "$\(job.price)")
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundColor(Color("primaryComHandColor"))
@@ -569,7 +581,7 @@ struct InteractiveTourView: View {
                         )
                 }
                 
-                Button(action: skipTour) {
+                Button(action: restartTour) {
                     Text("Back to Welcome")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -592,19 +604,9 @@ struct InteractiveTourView: View {
                 }
                 
                 // Auto-advance indicator
-                if currentStep != .complete {
-                    Text("Auto-advancing in 3 seconds...")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .onAppear {
-                            // Auto-advance after 3 seconds
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                                withAnimation {
-                                    nextStep()
-                                }
-                            }
-                        }
-                }
+                Text("Auto-advancing in 8 seconds...")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -624,6 +626,21 @@ struct InteractiveTourView: View {
     }
     
     // MARK: - Actions
+    private func scheduleAutoAdvance() {
+        // Cancel any existing task first
+        autoAdvanceTask?.cancel()
+        
+        // Don't schedule if we're on the last step
+        guard currentStep != .complete else { return }
+        
+        // Create new task for auto-advance
+        autoAdvanceTask = Task {
+            try? await Task.sleep(nanoseconds: 8_000_000_000) // 8 seconds
+            guard !Task.isCancelled else { return }
+            withAnimation { nextStep() }
+        }
+    }
+    
     private func nextStep() {
         guard let next = TourStep(rawValue: currentStep.rawValue + 1) else {
             return
@@ -632,7 +649,15 @@ struct InteractiveTourView: View {
     }
     
     private func skipTour() {
+        // Cancel auto-advance before dismissing
+        autoAdvanceTask?.cancel()
         dismiss()
+    }
+    
+    private func restartTour() {
+        withAnimation {
+            currentStep = .welcome
+        }
     }
     
     private func startRealSignUp() {
