@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import SwiftData
 
 // MARK: - Community Hands App Entry Point
 // Launches SplashScreen first, which transitions to WelcomeView
 // SplashScreen provides branded animation and app initialization time
+// SwiftData models are loaded into ModelContainer for persistence
 @main
 struct Cummunity_HandsApp: App {
     // MARK: - Auth View Model
@@ -24,5 +26,9 @@ struct Cummunity_HandsApp: App {
             SplashScreen()
                 .environmentObject(authViewModel)
         }
+        // MARK: - SwiftData Model Container
+        // Provides local persistence for all app data
+        // Models: User, JobPosting, AcceptedJob, TermsAcceptance
+        .modelContainer(for: [User.self, JobPosting.self, AcceptedJob.self, TermsAcceptance.self])
     }
 }
