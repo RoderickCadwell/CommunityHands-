@@ -189,6 +189,8 @@ struct LoadingView: View {
         animationSequenceTask?.cancel()
 
         animationSequenceTask = Task { @MainActor in
+            guard !Task.isCancelled, activeSequenceID == sequenceID else { return }
+
             // Step 1: Gentle bounce animation
             withAnimation(Animation.easeInOut(duration: 0.5).repeatCount(4, autoreverses: true)) {
                 bounceOffset = 10
