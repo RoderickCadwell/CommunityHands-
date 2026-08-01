@@ -193,6 +193,7 @@ struct SignUpView: View {
             }
                 }
             }
+            .navigationTitle("Sign Up")
             .navigationBarTitleDisplayMode(.inline)
     }
 

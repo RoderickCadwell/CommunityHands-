@@ -175,6 +175,7 @@ struct LoginView: View {
             }
                 }
             }
+            .navigationTitle("Log In")
             .navigationBarTitleDisplayMode(.inline)
     }
 
